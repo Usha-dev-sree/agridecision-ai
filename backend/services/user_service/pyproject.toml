@@ -7,7 +7,7 @@ authors = ["AgriDecision Team <engineering@agridecision.com>"]
 [tool.poetry.dependencies]
 python = "^3.11"
 fastapi = "^0.109.0"
-uvicorn = {extras = ["standard"], version = "^0.27.0"}
+uvicorn = {extras = ["standard"], version = "^0.51.0"}
 sqlalchemy = {extras = ["asyncio"], version = "^2.0.25"}
 asyncpg = "^0.29.0"
 alembic = "^1.13.1"
