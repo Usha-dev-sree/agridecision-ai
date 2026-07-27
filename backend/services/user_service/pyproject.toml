@@ -27,7 +27,7 @@ testcontainers = "^3.7.1"
 pytest-cov = "^4.1.0"
 black = "^24.1.1"
 ruff = "^0.2.1"
-mypy = "^1.8.0"
+mypy = "^2.3.0"
 
 [build-system]
 requires = ["poetry-core"]
