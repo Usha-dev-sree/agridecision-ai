@@ -1,6 +1,12 @@
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
+  external_labels:
+    cluster: 'agridecision-local'
+    environment: 'development'
+
+rule_files:
+  - /etc/prometheus/rules/*.yml
 
 scrape_configs:
   - job_name: 'prometheus'
@@ -8,21 +14,75 @@ scrape_configs:
       - targets: ['localhost:9090']
 
   - job_name: 'user-service'
-    static_configs:
-      - targets: ['user-service:8000']
     metrics_path: '/metrics'
+    static_configs:
+      - targets: ['host.docker.internal:8009']
+        labels:
+          service: 'user-service'
 
   - job_name: 'farm-service'
-    static_configs:
-      - targets: ['farm-service:8001']
     metrics_path: '/metrics'
+    static_configs:
+      - targets: ['host.docker.internal:8001']
+        labels:
+          service: 'farm-service'
 
   - job_name: 'advisory-service'
-    static_configs:
-      - targets: ['advisory-service:8002']
     metrics_path: '/metrics'
+    static_configs:
+      - targets: ['host.docker.internal:8002']
+        labels:
+          service: 'advisory-service'
 
-  - job_name: 'ai-service'
-    static_configs:
-      - targets: ['ai-service:8080']
+  - job_name: 'weather-service'
     metrics_path: '/metrics'
+    static_configs:
+      - targets: ['host.docker.internal:8003']
+        labels:
+          service: 'weather-service'
+
+  - job_name: 'market-service'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['host.docker.internal:8004']
+        labels:
+          service: 'market-service'
+
+  - job_name: 'analytics-service'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['host.docker.internal:8005']
+        labels:
+          service: 'analytics-service'
+
+  - job_name: 'financial-service'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['host.docker.internal:8006']
+        labels:
+          service: 'financial-service'
+
+  - job_name: 'notification-service'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['host.docker.internal:8007']
+        labels:
+          service: 'notification-service'
+
+  - job_name: 'enterprise-service'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['host.docker.internal:8008']
+        labels:
+          service: 'enterprise-service'
+
+  - job_name: 'kong-gateway'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['kong:8001']
+        labels:
+          service: 'kong-gateway'
+
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['host.docker.internal:9100']

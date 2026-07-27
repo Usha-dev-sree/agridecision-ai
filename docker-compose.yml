@@ -15,7 +15,7 @@ volumes:
 services:
   # ─── Datastores ─────────────────────────────────────────────────────────────
   postgres:
-    image: postgres:15-alpine
+    image: postgis/postgis:15-3.4-alpine
     container_name: agri-postgres
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-agridecision_user}
@@ -34,7 +34,7 @@ services:
       retries: 5
 
   timescaledb:
-    image: timescale/timescaledb:latest-pg15
+    image: timescale/timescaledb-ha:pg15
     container_name: agri-timescaledb
     environment:
       POSTGRES_DB: ${TIMESCALE_DB:-agridecision_farm}

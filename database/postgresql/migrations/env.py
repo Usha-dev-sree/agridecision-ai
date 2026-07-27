@@ -40,27 +40,25 @@ from backend.services.user_service.src.models.subscription import Subscription, 
 from backend.services.user_service.src.models.consent import ConsentRecord  # noqa: F401
 
 # Farm
-from backend.services.farm_service.src.models.plot import FarmPlot, PlotBoundary  # noqa: F401
-from backend.services.farm_service.src.models.soil import SoilProfile  # noqa: F401
-from backend.services.farm_service.src.models.season import CropSeason  # noqa: F401
-from backend.services.farm_service.src.models.device import IoTDevice  # noqa: F401
+from backend.services.farm_service.src.models.farm_plot import FarmPlot  # noqa: F401
+from backend.services.farm_service.src.models.plot_boundary import PlotBoundary  # noqa: F401
+from backend.services.farm_service.src.models.soil_profile import SoilProfile  # noqa: F401
+from backend.services.farm_service.src.models.crop_season import CropSeason  # noqa: F401
+from backend.services.farm_service.src.models.iot_device import IoTDevice  # noqa: F401
 
 # Advisory
-from backend.services.advisory_service.src.models.recommendation import CropRecommendation, RecommendationItem  # noqa: F401
-from backend.services.advisory_service.src.models.irrigation import IrrigationSchedule  # noqa: F401
-from backend.services.advisory_service.src.models.fertilizer import FertilizerPlan, FertilizerApplication  # noqa: F401
-from backend.services.advisory_service.src.models.diagnosis import ImageDiagnosisRecord  # noqa: F401
-from backend.services.advisory_service.src.models.assignment import AgronomistAssignment  # noqa: F401
+try:
+    from backend.services.advisory_service.src.models.crop_recommendation import CropRecommendation  # noqa: F401
+    from backend.services.advisory_service.src.models.irrigation_schedule import IrrigationSchedule  # noqa: F401
+    from backend.services.advisory_service.src.models.image_diagnosis import ImageDiagnosisRecord  # noqa: F401
+except ImportError:
+    pass
 
 # Market
-from backend.services.market_service.src.models.price import MandiProfile, CommodityPrice, PriceForecast  # noqa: F401
-from backend.services.market_service.src.models.referral import FinancialReferral  # noqa: F401
-
-# Platform
-from backend.services.analytics_service.src.models.platform import SystemConfig, AuditLog, ApiKey, WebhookConfig, WebhookDeliveryLog  # noqa: F401
-
-# Reference
-from backend.services.advisory_service.src.models.reference import AgroEcologicalZone, CropVariety, PestDisease, InputProduct  # noqa: F401
+try:
+    from backend.services.market_service.src.models.market_price import CommodityPrice  # noqa: F401
+except ImportError:
+    pass
 
 target_metadata = Base.metadata
 
