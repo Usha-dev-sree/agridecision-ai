@@ -1,0 +1,73 @@
+# =============================================
+# AgriDecision AI — .gitattributes
+# Ensures consistent line endings across OS
+# =============================================
+
+# Default: normalize all text files to LF in repo
+* text=auto eol=lf
+
+# Explicitly LF for shell scripts (must not be CRLF)
+*.sh text eol=lf
+*.bash text eol=lf
+Makefile text eol=lf
+
+# Python
+*.py text eol=lf
+*.pyi text eol=lf
+
+# JavaScript / TypeScript / Web
+*.js text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.jsx text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.toml text eol=lf
+*.md text eol=lf
+*.mdx text eol=lf
+
+# Docker
+Dockerfile text eol=lf
+*.dockerfile text eol=lf
+docker-compose*.yml text eol=lf
+
+# Dart / Flutter
+*.dart text eol=lf
+pubspec.yaml text eol=lf
+
+# SQL
+*.sql text eol=lf
+*.groovy text eol=lf
+
+# Terraform
+*.tf text eol=lf
+*.tfvars text eol=lf
+
+# Kubernetes / Helm
+*.yaml text eol=lf
+
+# Proto
+*.proto text eol=lf
+
+# Binary files — no line-ending conversion
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.zip binary
+*.gz binary
+*.tar binary
+*.onnx binary
+*.pt binary
+*.bin binary
+*.pyc binary
+*.pyo binary
