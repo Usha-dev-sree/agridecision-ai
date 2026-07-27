@@ -1,0 +1,79 @@
+# =============================================
+# AgriDecision AI — .gitignore
+# =============================================
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.venv/
+venv/
+env/
+pip-wheel-metadata/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+coverage.xml
+*.log
+
+# Node.js / Frontend / Mobile
+node_modules/
+.next/
+.turbo/
+out/
+dist/
+build/
+*.tsbuildinfo
+.expo/
+android/app/build/
+ios/build/
+ios/Pods/
+*.jks
+*.keystore
+*.p8
+*.p12
+*.mobileprovision
+
+# Terraform
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
+*.tfplan
+crash.log
+
+# Secrets & Environment
+.env
+.env.local
+.env.staging
+.env.production
+*.pem
+*.key
+*.crt
+secrets/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Docker
+*.dockerignore
+
+# Model artifacts (use registry instead)
+*.onnx
+*.pt
+*.bin
+model_weights/

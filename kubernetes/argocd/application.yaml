@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: agridecision-production
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/agridecision/agridecision-ai.git'
+    targetRevision: HEAD
+    path: kubernetes/helm/microservices
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

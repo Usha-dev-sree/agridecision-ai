@@ -1,0 +1,30 @@
+name: "yield_prediction"
+platform: "onnxruntime_onnx"
+max_batch_size: 16
+
+input [
+  {
+    name: "float_input"
+    data_type: TYPE_FP32
+    dims: [ 8 ]
+  }
+]
+
+output [
+  {
+    name: "variable"
+    data_type: TYPE_FP32
+    dims: [ 1 ]
+  }
+]
+
+instance_group [
+  {
+    count: 1
+    kind: KIND_GPU
+  }
+]
+
+dynamic_batching {
+  max_queue_delay_microseconds: 5000
+}

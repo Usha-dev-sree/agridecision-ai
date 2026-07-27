@@ -1,0 +1,80 @@
+name: AgriDecision CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "master", "main" ]
+  pull_request:
+    branches: [ "master", "main" ]
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 pytest
+
+      - name: Lint with flake8
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+
+  build-and-push:
+    needs: lint-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build user-service image
+        run: |
+          docker build -t 602401143452.dkr.ecr.us-east-1.amazonaws.com/user-service:latest -f backend/services/user_service/Dockerfile backend/services/user_service
+          docker push 602401143452.dkr.ecr.us-east-1.amazonaws.com/user-service:latest
+
+      - name: Build farm-service image
+        run: |
+          docker build -t 602401143452.dkr.ecr.us-east-1.amazonaws.com/farm-service:latest -f backend/services/farm_service/Dockerfile backend/services/farm_service
+          docker push 602401143452.dkr.ecr.us-east-1.amazonaws.com/farm-service:latest
+
+  gitops-deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitOps repo
+        uses: actions/checkout@v3
+
+      - name: Update Helm tag values
+        run: |
+          sed -i 's/imageTag: .*/imageTag: "latest"/g' kubernetes/helm/microservices/values.yaml
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "gitops-bot"
+          git config --global user.email "bot@agridecision.com"
+          git add kubernetes/helm/microservices/values.yaml
+          git commit -m "Auto update ECR deployment image tags [skip ci]" || exit 0
+          git push origin HEAD

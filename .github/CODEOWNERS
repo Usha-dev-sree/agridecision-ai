@@ -1,0 +1,22 @@
+# AgriDecision AI Repository Code Owners
+
+# Core Infrastructure & DevOps
+/infrastructure/          @agridecision/devops-team
+/kubernetes/              @agridecision/devops-team
+/devops/                  @agridecision/devops-team
+/.github/                 @agridecision/devops-team
+
+# Backend Microservices
+/backend/                 @agridecision/backend-team
+
+# Machine Learning & AI
+/ai_services/             @agridecision/ai-team
+
+# Web Frontend
+/frontend/                @agridecision/frontend-team
+
+# Mobile App
+/mobile/                  @agridecision/mobile-team
+
+# Testing & Quality Assurance
+/testing/                 @agridecision/qa-team

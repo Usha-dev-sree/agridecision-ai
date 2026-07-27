@@ -1,0 +1,84 @@
+_format_version: "3.0"
+_transform: true
+
+services:
+  - name: user-service
+    url: http://user-service:8000
+    routes:
+      - name: auth-routes
+        paths:
+          - /v1/auth
+          - /v1/users
+  - name: farm-service
+    url: http://farm-service:8001
+    routes:
+      - name: farm-routes
+        paths:
+          - /v1/plots
+  - name: advisory-service
+    url: http://advisory-service:8002
+    routes:
+      - name: advisory-routes
+        paths:
+          - /v1/advisory
+  - name: market-service
+    url: http://market-service:8003
+    routes:
+      - name: market-routes
+        paths:
+          - /v1/market
+  - name: weather-service
+    url: http://weather-service:8004
+    routes:
+      - name: weather-routes
+        paths:
+          - /v1/weather
+  - name: ai-service
+    url: http://ai-service:8080
+    routes:
+      - name: ai-routes
+        paths:
+          - /v1/detect-disease
+          - /v1/predict-yield
+          - /v1/forecast-price
+          - /v1/advisory/query
+
+plugins:
+  - name: cors
+    config:
+      origins:
+        - "http://localhost:3000"
+        - "http://localhost:5173"
+        - "https://app.agridecision.ai"
+      methods:
+        - GET
+        - POST
+        - PUT
+        - PATCH
+        - DELETE
+        - OPTIONS
+      headers:
+        - Accept
+        - Accept-Version
+        - Content-Length
+        - Content-Type
+        - Authorization
+        - X-Request-ID
+      exposed_headers:
+        - X-Request-ID
+      credentials: true
+      max_age: 3600
+  - name: rate-limiting
+    config:
+      second: 10
+      hour: 10000
+      policy: redis
+      redis_host: redis
+      redis_port: 6379
+      redis_password: "${REDIS_PASSWORD}"
+  - name: jwt
+    config:
+      claims_to_verify:
+        - exp
+      key_claim_name: iss
+      secret_is_base64: false

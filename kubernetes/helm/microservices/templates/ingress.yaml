@@ -1,0 +1,45 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: agridecision-alb-ingress
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:602401143452:certificate/agridecision-cert-uuid
+spec:
+  rules:
+    - host: api.agridecision.ai
+      http:
+        paths:
+          - path: /v1/auth
+            pathType: Prefix
+            backend:
+              service:
+                name: user-service
+                port:
+                  number: 8000
+          - path: /v1/plots
+            pathType: Prefix
+            backend:
+              service:
+                name: farm-service
+                port:
+                  number: 8001
+          - path: /v1/advisory
+            pathType: Prefix
+            backend:
+              service:
+                name: advisory-service
+                port:
+                  number: 8002
+          - path: /v1/ai
+            pathType: Prefix
+            backend:
+              service:
+                name: ai-service
+                port:
+                  number: 8080

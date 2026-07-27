@@ -1,0 +1,25 @@
+version: 2
+updates:
+  # Enable version updates for Docker
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  # Enable version updates for Python dependencies
+  - package-ecosystem: "pip"
+    directory: "/backend/services/user_service"
+    schedule:
+      interval: "weekly"
+
+  # Enable version updates for NPM dependencies
+  - package-ecosystem: "npm"
+    directory: "/frontend/apps/agronomist-portal"
+    schedule:
+      interval: "weekly"
+
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"

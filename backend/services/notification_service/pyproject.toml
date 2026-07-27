@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agri-notification-service"
+version = "1.0.0"
+description = "AgriDecision AI - FCM Push & SMS Notification Dispatcher Service"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.100.0",
+    "uvicorn[standard]>=0.22.0",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    "sqlalchemy[asyncio]>=2.0.0",
+    "asyncpg>=0.28.0",
+    "redis>=4.6.0",
+    "aiokafka>=0.8.0",
+    "httpx>=0.24.0",
+    "prometheus-client>=0.17.0"
+]

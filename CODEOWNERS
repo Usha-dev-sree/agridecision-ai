@@ -1,0 +1,56 @@
+# Code Owners — AgriDecision AI
+# =============================================
+# Each path maps to the GitHub team responsible for code review.
+# Format: <path> <@github-team>
+# Docs: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# === Default Fallback Owner ===
+*                                       @agridecision-ai/core-engineering
+
+# === Backend Microservices ===
+/backend/services/user-service/         @agridecision-ai/identity-security
+/backend/services/farm-service/         @agridecision-ai/agronomic-engineering
+/backend/services/advisory-service/     @agridecision-ai/ai-advisory
+/backend/services/market-service/       @agridecision-ai/market-financial
+/backend/services/weather-service/      @agridecision-ai/data-ingestion
+/backend/services/notification-service/ @agridecision-ai/platform-communications
+/backend/services/financial-service/    @agridecision-ai/market-financial
+/backend/services/enterprise-service/   @agridecision-ai/enterprise-b2b
+/backend/services/analytics-service/    @agridecision-ai/data-platform
+/backend/common/                        @agridecision-ai/core-engineering
+/backend/proto/                         @agridecision-ai/core-engineering
+
+# === Frontend Applications ===
+/frontend/apps/agronomist-portal/       @agridecision-ai/frontend-web
+/frontend/apps/admin-console/           @agridecision-ai/internal-tools
+/frontend/packages/                     @agridecision-ai/frontend-web
+
+# === Mobile Application ===
+/mobile/                                @agridecision-ai/mobile-engineering
+
+# === AI & ML Services ===
+/ai_services/feature_store/             @agridecision-ai/mlops-data-platform
+/ai_services/inference_gateway/         @agridecision-ai/mlops-data-platform
+/ai_services/training_pipelines/        @agridecision-ai/ai-data-science
+/ai_services/federated_learning/        @agridecision-ai/ai-data-science
+/ai_services/voice_vis_engine/          @agridecision-ai/conversational-ai
+
+# === Database Layer ===
+/database/                              @agridecision-ai/database-infrastructure
+
+# === Infrastructure ===
+/infrastructure/terraform/              @agridecision-ai/sre-cloud
+/kubernetes/                            @agridecision-ai/sre-cloud
+/devops/                                @agridecision-ai/sre-cloud
+
+# === Monitoring ===
+/monitoring/                            @agridecision-ai/sre-cloud
+
+# === Testing ===
+/testing/                               @agridecision-ai/qa-testing
+
+# === CI/CD ===
+/.github/                               @agridecision-ai/core-engineering
+
+# === Documentation ===
+/docs/                                  @agridecision-ai/core-engineering
