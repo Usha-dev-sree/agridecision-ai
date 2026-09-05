@@ -3,7 +3,7 @@ Federated Learning - Aggregation Server (FedAvg)
 Implements the Federated Averaging (FedAvg) algorithm to aggregate local model updates from edge client devices
 without raw data transfer, preserving data privacy for regional agricultural cooperatives.
 """
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 from backend.common.logging import get_logger
 

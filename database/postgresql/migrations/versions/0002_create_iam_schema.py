@@ -47,12 +47,20 @@ def upgrade() -> None:
         sa.UniqueConstraint("referral_code"),
         schema="iam",
     )
-    op.execute("ALTER TABLE iam.user ADD COLUMN role iam.user_role_enum NOT NULL DEFAULT 'FARMER'") if False else None
-
-    # Cast text columns to proper enum types
+    # Cast text columns to proper enum types:
+    # Must drop server defaults first, cast, then re-apply enum defaults.
+    op.execute("ALTER TABLE iam.user ALTER COLUMN role DROP DEFAULT")
     op.execute("ALTER TABLE iam.user ALTER COLUMN role TYPE iam.user_role_enum USING role::iam.user_role_enum")
+    op.execute("ALTER TABLE iam.user ALTER COLUMN role SET DEFAULT 'FARMER'")
+
+    op.execute("ALTER TABLE iam.user ALTER COLUMN account_status DROP DEFAULT")
     op.execute("ALTER TABLE iam.user ALTER COLUMN account_status TYPE iam.account_status_enum USING account_status::iam.account_status_enum")
+    op.execute("ALTER TABLE iam.user ALTER COLUMN account_status SET DEFAULT 'PENDING'")
+
+    op.execute("ALTER TABLE iam.user ALTER COLUMN preferred_language DROP DEFAULT")
     op.execute("ALTER TABLE iam.user ALTER COLUMN preferred_language TYPE iam.language_code_enum USING preferred_language::iam.language_code_enum")
+    op.execute("ALTER TABLE iam.user ALTER COLUMN preferred_language SET DEFAULT 'en'")
+
     op.execute("ALTER TABLE iam.user ALTER COLUMN farmer_type TYPE iam.farmer_type_enum USING farmer_type::iam.farmer_type_enum")
 
     # Indexes
@@ -154,7 +162,9 @@ def upgrade() -> None:
         sa.UniqueConstraint("user_id"),
         schema="iam",
     )
+    op.execute("ALTER TABLE iam.subscription ALTER COLUMN plan DROP DEFAULT")
     op.execute("ALTER TABLE iam.subscription ALTER COLUMN plan TYPE iam.subscription_plan_enum USING plan::iam.subscription_plan_enum")
+    op.execute("ALTER TABLE iam.subscription ALTER COLUMN plan SET DEFAULT 'FREE'")
     op.execute("ALTER TABLE iam.subscription ADD CONSTRAINT chk_billing_period CHECK (billing_period_end > billing_period_start)")
     op.create_index("idx_sub_user_id", "subscription", ["user_id"], schema="iam")
     op.create_index("idx_sub_plan",    "subscription", ["plan"],    schema="iam")
@@ -183,7 +193,9 @@ def upgrade() -> None:
         sa.UniqueConstraint("idempotency_key"),
         schema="iam",
     )
+    op.execute("ALTER TABLE iam.payment_record ALTER COLUMN status DROP DEFAULT")
     op.execute("ALTER TABLE iam.payment_record ALTER COLUMN status TYPE iam.payment_status_enum USING status::iam.payment_status_enum")
+    op.execute("ALTER TABLE iam.payment_record ALTER COLUMN status SET DEFAULT 'PENDING'")
     op.execute("ALTER TABLE iam.payment_record ALTER COLUMN plan_purchased TYPE iam.subscription_plan_enum USING plan_purchased::iam.subscription_plan_enum")
     op.execute("ALTER TABLE iam.payment_record ADD CONSTRAINT chk_amount_positive CHECK (amount_inr >= 0)")
     op.create_index("idx_payment_user_id",    "payment_record", ["user_id"],           schema="iam")

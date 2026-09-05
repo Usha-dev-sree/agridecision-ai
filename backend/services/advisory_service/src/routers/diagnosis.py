@@ -2,12 +2,14 @@
 Advisory Service - Diagnosis Router
 Handles image upload registration and asynchronous diagnosis polling.
 """
+import os
 from typing import Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, File, Form, Query, UploadFile, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from backend.common.logging import get_logger
 from backend.services.advisory_service.src.dependencies import get_current_user, get_db
 from backend.services.advisory_service.src.repositories.diagnosis_repository import DiagnosisRepository
 from backend.services.advisory_service.src.schemas.diagnosis import (
@@ -16,6 +18,7 @@ from backend.services.advisory_service.src.schemas.diagnosis import (
 )
 from backend.services.advisory_service.src.services.diagnosis_service import DiagnosisService
 
+logger = get_logger(__name__)
 router = APIRouter(prefix="/v1/advisory/diagnosis", tags=["Disease Diagnosis"])
 
 
@@ -42,8 +45,25 @@ async def submit_image_for_diagnosis(
     s3_key = f"diagnoses/{user_id}/{file.filename}"
     content_type = file.content_type or "image/jpeg"
 
-    # TODO: Upload to S3 via boto3 / aioboto3 before persisting
-    # await s3_client.upload_fileobj(file.file, BUCKET_NAME, s3_key)
+    # Upload to S3 via aioboto3 (degrades gracefully if unconfigured in dev)
+    bucket_name = os.getenv("S3_BUCKET_NAME", "agridecision-diagnoses")
+    try:
+        import aioboto3
+        session = aioboto3.Session()
+        async with session.client("s3") as s3:
+            file.file.seek(0)
+            await s3.upload_fileobj(
+                file.file,
+                bucket_name,
+                s3_key,
+                ExtraArgs={"ContentType": content_type},
+            )
+            logger.info("Image uploaded to S3", extra={"bucket": bucket_name, "key": s3_key})
+    except Exception as exc:
+        logger.warning(
+            "S3 upload skipped (S3 unavailable or not configured)",
+            extra={"error": str(exc)},
+        )
 
     return await service.register_upload(
         user_id=user_id,

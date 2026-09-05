@@ -55,6 +55,7 @@ class UserDetailResponse(UserBase):
     role: str
     account_status: str
     has_verified_phone: bool
+    has_verified_email: bool = False
     has_verified_agronomist_credential: bool
     referral_code: Optional[str] = None
     created_at: datetime

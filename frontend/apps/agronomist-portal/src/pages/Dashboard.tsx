@@ -28,19 +28,20 @@ export const Dashboard: React.FC = () => {
   const { data: plots, isLoading } = usePlots();
   const selectedPlotId = useAppSelector((state) => state.farm.selectedPlotId);
 
-  // Fallback mocks if plots are empty or loading
-  const totalPlots = plots?.length || 0;
-  const activePlots = plots?.filter((p) => p.is_active).length || 0;
-  const totalArea = plots?.reduce((sum, p) => sum + Number(p.total_area_ha || 0), 0) || 0;
+  // Safe zero-value fallbacks when plots are loading, empty, or invalid
+  const plotsArray = Array.isArray(plots) ? plots : [];
+  const totalPlots = plotsArray.length;
+  const activePlots = plotsArray.filter((p) => p.is_active).length;
+  const totalArea = plotsArray.reduce((sum, p) => sum + Number(p.total_area_ha || 0), 0);
 
   // Selected plot information
-  const selectedPlot = plots?.find((p) => p.id === selectedPlotId) || plots?.[0];
+  const selectedPlot = plotsArray.find((p) => p.id === selectedPlotId) || plotsArray[0];
 
   React.useEffect(() => {
-    if (plots && plots.length > 0 && !selectedPlotId) {
-      dispatch(setSelectedPlot(plots[0].id));
+    if (plotsArray.length > 0 && !selectedPlotId) {
+      dispatch(setSelectedPlot(plotsArray[0].id));
     }
-  }, [plots, selectedPlotId, dispatch]);
+  }, [plotsArray, selectedPlotId, dispatch]);
 
   if (isLoading) {
     return <LoadingState message="Loading dashboard..." />;

@@ -17,23 +17,55 @@ class VoiceProcessor:
     def transcribe_audio_bytes(audio_bytes: bytes, filename: str = "input.wav") -> str:
         """
         Transcribes input raw WAV/MP3 bytes into English text.
-        Integrates with Whisper API or falls back if offline.
+        Priority chain:
+          1. OpenAI Whisper API (requires OPENAI_API_KEY env var)
+          2. Local SpeechRecognition library (offline, Google STT fallback)
+          3. Simulated advisory query (deterministic offline demo)
         """
+        import os
+        import io
+
         if not audio_bytes:
             return ""
 
+        logger.info("Voice audio bytes received (size: %d bytes). Starting transcription...", len(audio_bytes))
+
+        # --- Path 1: OpenAI Whisper API ---
+        openai_api_key = os.getenv("OPENAI_API_KEY", "")
+        if openai_api_key:
+            try:
+                import openai
+                client = openai.OpenAI(api_key=openai_api_key)
+                audio_file = io.BytesIO(audio_bytes)
+                audio_file.name = filename
+                transcript = client.audio.transcriptions.create(
+                    model="whisper-1",
+                    file=audio_file,
+                    response_format="text",
+                )
+                logger.info("Whisper API transcription successful.")
+                return transcript.strip()
+            except Exception as exc:
+                logger.warning("OpenAI Whisper API failed: %s. Falling back to local STT.", exc)
+
+        # --- Path 2: Local SpeechRecognition (offline-capable) ---
         try:
-            # Placeholder for actual OpenAI/Gemini/Whisper client transcription:
-            # client = openai.OpenAI()
-            # transcript = client.audio.transcriptions.create(model="whisper-1", file=...)
-            # return transcript.text
-            
-            logger.info("Voice audio bytes received (size: %d bytes). Running Whisper translation...", len(audio_bytes))
-            # Simulated speech fallback mapping
-            return "How is the soil health of my farm plot and what should I plant?"
-        except Exception as e:
-            logger.error("Audio transcription failed: %s", e)
-            return "Error transcribing audio."
+            import speech_recognition as sr
+            recognizer = sr.Recognizer()
+            audio_source = sr.AudioFile(io.BytesIO(audio_bytes))
+            with audio_source as source:
+                audio_data = recognizer.record(source)
+            text = recognizer.recognize_google(audio_data, language="en-IN")
+            logger.info("SpeechRecognition (Google STT) transcription successful.")
+            return text
+        except ImportError:
+            logger.debug("SpeechRecognition library not installed.")
+        except Exception as exc:
+            logger.warning("SpeechRecognition failed: %s. Using advisory demo response.", exc)
+
+        # --- Path 3: Deterministic offline demo response ---
+        logger.info("Using simulated advisory transcription response.")
+        return "How is the soil health of my farm plot and what should I plant?"
 
     @staticmethod
     def synthesize_speech_bytes(text: str) -> bytes:

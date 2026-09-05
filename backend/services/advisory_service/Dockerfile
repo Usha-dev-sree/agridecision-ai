@@ -12,7 +12,7 @@ ENV POETRY_HOME="/opt/poetry" \
 RUN pip install poetry==1.7.1
 
 WORKDIR /app
-COPY pyproject.toml poetry.lock* ./
+COPY backend/services/advisory_service/pyproject.toml backend/services/advisory_service/poetry.lock* ./
 RUN poetry install --only main --no-root
 
 # Second stage: runtime
@@ -29,6 +29,7 @@ ENV PATH="/app/.venv/bin:$PATH"
 
 COPY backend/common/ /app/backend/common/
 COPY backend/services/advisory_service/ /app/backend/services/advisory_service/
+COPY ai_services/ /app/ai_services/
 
 ENV PYTHONPATH=/app
 

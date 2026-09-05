@@ -6,6 +6,7 @@ from uuid import UUID
 
 from backend.common.exceptions import NotFoundException
 from backend.common.logging import get_logger
+from backend.services.advisory_service.src.events.producer import publish_diagnosis_event
 from backend.services.advisory_service.src.models.image_diagnosis import ImageDiagnosis
 from backend.services.advisory_service.src.repositories.diagnosis_repository import DiagnosisRepository
 from backend.services.advisory_service.src.schemas.diagnosis import (
@@ -47,8 +48,16 @@ class DiagnosisService:
             extra={"diagnosis_id": str(saved.id), "user_id": str(user_id)}
         )
 
-        # TODO: Publish Kafka event to trigger AI worker
-        # await publish_diagnosis_event("diagnosis.image.submitted", str(saved.id), {"s3_key": image_s3_key})
+        # Publish Kafka event to trigger AI inference worker
+        try:
+            await publish_diagnosis_event(
+                "diagnosis.image.submitted",
+                str(saved.id),
+                {"s3_key": image_s3_key, "user_id": str(user_id)},
+            )
+        except Exception as exc:
+            # Degrade gracefully: log but don't fail the HTTP request if Kafka is unreachable
+            logger.warning("Kafka publish skipped (broker unavailable)", extra={"error": str(exc)})
 
         return DiagnosisSubmitResponse(
             diagnosis_id=saved.id,

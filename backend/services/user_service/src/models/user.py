@@ -31,7 +31,8 @@ class User(Base):
 
     id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), primary_key=True, default=uuid4)
     phone_number: Mapped[str] = mapped_column(String(15), nullable=False, unique=True)
-    email: Mapped[Optional[str]] = mapped_column(String(320))
+    email: Mapped[Optional[str]] = mapped_column(String(320), unique=True)
+    password_hash: Mapped[Optional[str]] = mapped_column(String(255))
     national_id_hash: Mapped[Optional[str]] = mapped_column(String(64))
     full_name: Mapped[str] = mapped_column(String(200), nullable=False)
     
@@ -40,6 +41,7 @@ class User(Base):
     role: Mapped[str] = mapped_column(Text, server_default="FARMER", nullable=False)
     account_status: Mapped[str] = mapped_column(Text, server_default="PENDING", nullable=False)
     has_verified_phone: Mapped[bool] = mapped_column(Boolean, server_default="false", nullable=False)
+    has_verified_email: Mapped[bool] = mapped_column(Boolean, server_default="false", nullable=False)
     has_verified_agronomist_credential: Mapped[bool] = mapped_column(Boolean, server_default="false", nullable=False)
     preferred_language: Mapped[str] = mapped_column(Text, server_default="en", nullable=False)
     

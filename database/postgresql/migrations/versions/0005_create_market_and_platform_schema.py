@@ -43,8 +43,12 @@ def upgrade() -> None:
         sa.UniqueConstraint("mandi_code"),
         schema="market",
     )
+    op.execute("ALTER TABLE market.mandi_profile ALTER COLUMN operating_days DROP DEFAULT")
     op.execute("ALTER TABLE market.mandi_profile ALTER COLUMN operating_days TYPE TEXT[] USING '{}'::TEXT[]")
+    op.execute("ALTER TABLE market.mandi_profile ALTER COLUMN operating_days SET DEFAULT '{}'")
+    op.execute("ALTER TABLE market.mandi_profile ALTER COLUMN primary_crops DROP DEFAULT")
     op.execute("ALTER TABLE market.mandi_profile ALTER COLUMN primary_crops TYPE TEXT[] USING '{}'::TEXT[]")
+    op.execute("ALTER TABLE market.mandi_profile ALTER COLUMN primary_crops SET DEFAULT '{}'")
     op.execute("ALTER TABLE market.mandi_profile ADD CONSTRAINT chk_market_type CHECK (market_type IN ('APMC','PRIVATE','COOPERATIVE','DIRECT_MARKETING'))")
     op.execute("SELECT AddGeometryColumn('market','mandi_profile','location_geom',4326,'POINT',2)")
     op.create_index("idx_mandi_state",    "mandi_profile", ["state_code"], schema="market")
@@ -126,8 +130,12 @@ def upgrade() -> None:
         schema="market",
     )
     op.execute("ALTER TABLE market.financial_referral ALTER COLUMN product_type TYPE market.product_type_enum USING product_type::market.product_type_enum")
+    op.execute("ALTER TABLE market.financial_referral ALTER COLUMN status DROP DEFAULT")
     op.execute("ALTER TABLE market.financial_referral ALTER COLUMN status TYPE market.referral_status_enum USING status::market.referral_status_enum")
+    op.execute("ALTER TABLE market.financial_referral ALTER COLUMN status SET DEFAULT 'INITIATED'")
+    op.execute("ALTER TABLE market.financial_referral ALTER COLUMN data_fields_shared DROP DEFAULT")
     op.execute("ALTER TABLE market.financial_referral ALTER COLUMN data_fields_shared TYPE TEXT[] USING '{}'::TEXT[]")
+    op.execute("ALTER TABLE market.financial_referral ALTER COLUMN data_fields_shared SET DEFAULT '{}'")
     op.execute("ALTER TABLE market.financial_referral ADD CONSTRAINT chk_amount_positive CHECK (amount_requested_inr > 0 OR amount_requested_inr IS NULL)")
     op.create_index("idx_referral_user_id", "financial_referral", ["user_id"],     schema="market")
     op.create_index("idx_referral_status",  "financial_referral", ["status"],      schema="market")
@@ -150,7 +158,9 @@ def upgrade() -> None:
         sa.UniqueConstraint("config_key"),
         schema="platform",
     )
+    op.execute("ALTER TABLE platform.system_config ALTER COLUMN data_type DROP DEFAULT")
     op.execute("ALTER TABLE platform.system_config ALTER COLUMN data_type TYPE platform.config_data_type_enum USING data_type::platform.config_data_type_enum")
+    op.execute("ALTER TABLE platform.system_config ALTER COLUMN data_type SET DEFAULT 'STRING'")
     op.execute("CREATE TRIGGER trg_platform_system_config_updated_at BEFORE UPDATE ON platform.system_config FOR EACH ROW EXECUTE FUNCTION update_updated_at_column()")
 
     # Seed default config values
@@ -215,8 +225,12 @@ def upgrade() -> None:
         sa.UniqueConstraint("key_hash"),
         schema="platform",
     )
+    op.execute("ALTER TABLE platform.api_key ALTER COLUMN scopes DROP DEFAULT")
     op.execute("ALTER TABLE platform.api_key ALTER COLUMN scopes TYPE TEXT[] USING '{}'::TEXT[]")
+    op.execute("ALTER TABLE platform.api_key ALTER COLUMN scopes SET DEFAULT '{}'")
+    op.execute("ALTER TABLE platform.api_key ALTER COLUMN allowed_cidrs DROP DEFAULT")
     op.execute("ALTER TABLE platform.api_key ALTER COLUMN allowed_cidrs TYPE INET[] USING '{}'::INET[]")
+    op.execute("ALTER TABLE platform.api_key ALTER COLUMN allowed_cidrs SET DEFAULT '{}'")
     op.execute("""ALTER TABLE platform.api_key ADD CONSTRAINT chk_tenant_type
                   CHECK (tenant_type IN ('ENTERPRISE','FINANCIAL_PARTNER','RESEARCH','GOVERNMENT'))""")
     op.create_index("idx_api_key_hash",   "api_key", ["key_hash"],    schema="platform")
@@ -241,7 +255,9 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(["api_key_id"], ["platform.api_key.id"], ondelete="CASCADE"),
         schema="platform",
     )
+    op.execute("ALTER TABLE platform.webhook_config ALTER COLUMN event_types DROP DEFAULT")
     op.execute("ALTER TABLE platform.webhook_config ALTER COLUMN event_types TYPE TEXT[] USING '{}'::TEXT[]")
+    op.execute("ALTER TABLE platform.webhook_config ALTER COLUMN event_types SET DEFAULT '{}'")
     op.create_index("idx_webhook_api_key", "webhook_config", ["api_key_id"], schema="platform")
     op.execute("CREATE INDEX idx_webhook_active ON platform.webhook_config (is_active) WHERE is_active = TRUE")
     op.execute("CREATE TRIGGER trg_platform_webhook_config_updated_at BEFORE UPDATE ON platform.webhook_config FOR EACH ROW EXECUTE FUNCTION update_updated_at_column()")

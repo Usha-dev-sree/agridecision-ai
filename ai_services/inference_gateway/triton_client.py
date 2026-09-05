@@ -92,7 +92,13 @@ class TritonInferenceClient:
         try:
             results = await self.run_inference("crop_recommendation", {"float_input": arr})
             label = int(results["output_label"][0])
-            probs = results["output_probability"][0].tolist()
+            prob_data = results["output_probability"][0]
+            if isinstance(prob_data, dict):
+                probs = [float(v) for v in prob_data.values()]
+            elif hasattr(prob_data, "tolist"):
+                probs = prob_data.tolist()
+            else:
+                probs = list(prob_data)
             return label, probs
         except Exception as e:
             logger.error("Crop Recommendation inference failure: %s", e)

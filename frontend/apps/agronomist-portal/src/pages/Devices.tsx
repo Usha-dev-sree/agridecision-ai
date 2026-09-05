@@ -33,7 +33,7 @@ export const Devices: React.FC = () => {
       const data = await farmService.getDevices(activePlot.id);
       setDevices(data);
     } catch {
-      // Fallback mock devices
+      // Offline fallback: display demo devices when IoT device API is unreachable
       const now = new Date().toISOString();
       setDevices([
         { id: 'dev-1', plot_id: activePlot.id, device_serial: 'SN-SOIL-9482', device_type: 'SOIL_SENSOR', is_active: true, last_seen_at: now, firmware_version: 'v2.1.4', battery_level: 89, created_at: now },
@@ -60,9 +60,9 @@ export const Devices: React.FC = () => {
       setSerial('');
       fetchDevices();
     } catch {
-      // Mock local addition if API endpoint fails
+      // Optimistic local addition when device registration API is temporarily unavailable
       const now = new Date().toISOString();
-      const mockNew: IoTDevice = {
+      const newDevice: IoTDevice = {
         id: `dev-${Date.now()}`,
         plot_id: activePlot.id,
         device_serial: serial,
@@ -73,7 +73,7 @@ export const Devices: React.FC = () => {
         battery_level: 100,
         created_at: now,
       };
-      setDevices((prev) => [...prev, mockNew]);
+      setDevices((prev) => [...prev, newDevice]);
       setOpenRegister(false);
       setSerial('');
     }

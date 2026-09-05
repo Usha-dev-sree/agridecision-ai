@@ -122,6 +122,7 @@ async def run_async_migrations() -> None:
         for schema in MANAGED_SCHEMAS:
             await connection.execute(text(f"CREATE SCHEMA IF NOT EXISTS {schema}"))
         await connection.run_sync(do_run_migrations)
+        await connection.commit()
     await connectable.dispose()
 
 

@@ -4,6 +4,15 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface RegisterRequest {
+  full_name: string;
+  phone_number: string;
+  email?: string;
+  password: string;
+  role?: 'FARMER' | 'AGRONOMIST' | 'ENTERPRISE' | 'RESEARCHER';
+  state_code?: string;
+}
+
 export interface TokenResponse {
   access_token: string;
   refresh_token: string;

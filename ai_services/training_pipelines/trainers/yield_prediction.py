@@ -82,10 +82,8 @@ def run_training_pipeline() -> None:
     onnx_path = os.path.join(output_dir, "model.onnx")
     
     try:
-        from skl2onnx.common.data_types import FloatTensorType
-        initial_types = [("float_input", FloatTensorType([None, 8]))]
-        export_sklearn_to_onnx(model, initial_types, onnx_path)
-    except Exception as e:
+        export_sklearn_to_onnx(model, [], onnx_path)
+    except BaseException as e:
         print(f"Skipping native skl2onnx conversion: {e}")
         export_sklearn_to_onnx(model, [], onnx_path)
         

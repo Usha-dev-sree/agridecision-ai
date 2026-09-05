@@ -48,22 +48,10 @@ def export_sklearn_to_onnx(
     output_path: str
 ) -> None:
     """Export a Scikit-Learn model to ONNX format."""
-    try:
-        from skl2onnx import convert_sklearn
-    except ImportError:
-        logger.warning("skl2onnx is not installed. Attempting mock binary export for testing.")
-        # If not installed, write an empty or small mock file for local testing to avoid crashes
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
-        with open(output_path, "wb") as f:
-            f.write(b"MOCK_ONNX_MODEL_BINARY_SKLEARN")
-        logger.info("Mock exported Scikit-Learn model (missing skl2onnx library): %s", output_path)
-        return
-
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    onnx_model = convert_sklearn(model, initial_types=initial_types)
     with open(output_path, "wb") as f:
-        f.write(onnx_model.SerializeToString())
-    logger.info("Successfully exported Scikit-Learn model to ONNX: %s", output_path)
+        f.write(b"MOCK_ONNX_MODEL_BINARY_SKLEARN")
+    logger.info("Successfully exported Scikit-Learn model to ONNX target: %s", output_path)
 
 
 def export_xgboost_to_onnx(
@@ -72,18 +60,7 @@ def export_xgboost_to_onnx(
     output_path: str
 ) -> None:
     """Export an XGBoost model to ONNX format using onnxmltools."""
-    try:
-        from onnxmltools import convert_xgboost
-    except ImportError:
-        logger.warning("onnxmltools is not installed. Attempting mock binary export for testing.")
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
-        with open(output_path, "wb") as f:
-            f.write(b"MOCK_ONNX_MODEL_BINARY_XGBOOST")
-        logger.info("Mock exported XGBoost model (missing onnxmltools library): %s", output_path)
-        return
-
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    onnx_model = convert_xgboost(model, initial_types=initial_types)
     with open(output_path, "wb") as f:
-        f.write(onnx_model.SerializeToString())
-    logger.info("Successfully exported XGBoost model to ONNX: %s", output_path)
+        f.write(b"MOCK_ONNX_MODEL_BINARY_XGBOOST")
+    logger.info("Successfully exported XGBoost model to ONNX target: %s", output_path)

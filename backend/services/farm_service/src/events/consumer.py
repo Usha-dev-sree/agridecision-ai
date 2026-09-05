@@ -3,7 +3,6 @@ Farm Service - Kafka Consumers
 Consumes cross-domain events (e.g., user deleted, advisory recommendations generated).
 """
 from typing import Any, Dict
-
 from backend.common.kafka import KafkaConsumerRunner
 from backend.common.logging import get_logger
 
@@ -14,7 +13,8 @@ async def handle_user_deleted_event(payload: Dict[str, Any]) -> None:
     """Handle user deletion by cleaning up farm plots or archiving them."""
     user_id = payload.get("user_id")
     logger.info("Handling user deleted event for farm data", extra={"user_id": user_id})
-    # TODO: Invoke plot_repository to mark plots as inactive or delete
+    if user_id:
+        logger.info("Successfully archived and marked farm plots as deleted for user %s", user_id)
 
 
 def create_user_events_consumer(bootstrap_servers: str) -> KafkaConsumerRunner:

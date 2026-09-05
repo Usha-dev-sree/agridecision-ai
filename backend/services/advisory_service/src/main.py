@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.common.exceptions import APIException, api_exception_handler, general_exception_handler
 from backend.common.logging import get_logger, setup_logging
+from backend.common.metrics import instrument_app
 from backend.common.middleware.security_middleware import (
     CorrelationIdMiddleware,
     RequestSizeLimitMiddleware,
@@ -46,6 +47,9 @@ app = FastAPI(
 
 app.add_exception_handler(APIException, api_exception_handler)
 app.add_exception_handler(Exception, general_exception_handler)
+
+# Prometheus /metrics endpoint
+instrument_app(app)
 
 # Security & Infrastructure Middlewares
 app.add_middleware(SecurityHeadersMiddleware)

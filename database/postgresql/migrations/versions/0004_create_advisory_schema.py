@@ -48,7 +48,9 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(["agronomist_user_id"], ["iam.user.id"],            ondelete="SET NULL"),
         schema="advisory",
     )
+    op.execute("ALTER TABLE advisory.crop_recommendation ALTER COLUMN status DROP DEFAULT")
     op.execute("ALTER TABLE advisory.crop_recommendation ALTER COLUMN status TYPE advisory.recommendation_status_enum USING status::advisory.recommendation_status_enum")
+    op.execute("ALTER TABLE advisory.crop_recommendation ALTER COLUMN status SET DEFAULT 'ACTIVE'")
     op.execute("ALTER TABLE advisory.crop_recommendation ALTER COLUMN confidence_tier TYPE advisory.confidence_tier_enum USING confidence_tier::advisory.confidence_tier_enum")
     op.create_index("idx_rec_plot_id",     "crop_recommendation", ["farm_plot_id"],   schema="advisory")
     op.create_index("idx_rec_status",      "crop_recommendation", ["status"],         schema="advisory")
@@ -103,7 +105,9 @@ def upgrade() -> None:
         sa.UniqueConstraint("farm_plot_id", "schedule_date"),
         schema="advisory",
     )
+    op.execute("ALTER TABLE advisory.irrigation_schedule ALTER COLUMN irrigation_basis DROP DEFAULT")
     op.execute("ALTER TABLE advisory.irrigation_schedule ALTER COLUMN irrigation_basis TYPE advisory.irrigation_basis_enum USING irrigation_basis::advisory.irrigation_basis_enum")
+    op.execute("ALTER TABLE advisory.irrigation_schedule ALTER COLUMN irrigation_basis SET DEFAULT 'WEATHER_DRIVEN'")
     op.execute("CREATE INDEX idx_irr_plot_date ON advisory.irrigation_schedule (farm_plot_id, schedule_date DESC)")
     op.execute("CREATE INDEX idx_irr_required  ON advisory.irrigation_schedule (farm_plot_id, irrigation_required)")
 
@@ -191,7 +195,9 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(["assigned_agronomist_id"], ["iam.user.id"],         ondelete="SET NULL"),
         schema="advisory",
     )
+    op.execute("ALTER TABLE advisory.image_diagnosis_record ALTER COLUMN status DROP DEFAULT")
     op.execute("ALTER TABLE advisory.image_diagnosis_record ALTER COLUMN status TYPE advisory.diagnosis_status_enum USING status::advisory.diagnosis_status_enum")
+    op.execute("ALTER TABLE advisory.image_diagnosis_record ALTER COLUMN status SET DEFAULT 'PENDING_AI'")
     op.execute("""ALTER TABLE advisory.image_diagnosis_record ADD CONSTRAINT chk_rejection_reason
                   CHECK (rejection_reason IN ('BLUR','UNDEREXPOSURE','OVEREXPOSURE','NO_LEAF_DETECTED','FILE_TOO_LARGE'))""")
     op.execute("ALTER TABLE advisory.image_diagnosis_record ADD CONSTRAINT chk_ai_confidence CHECK (ai_primary_confidence BETWEEN 0 AND 1 OR ai_primary_confidence IS NULL)")

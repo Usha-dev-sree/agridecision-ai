@@ -22,6 +22,17 @@ class UserRepository:
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
+    async def get_by_email(self, email: str) -> Optional[User]:
+        stmt = select(User).where(User.email == email).options(selectinload(User.profile))
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
+
+    async def get_by_identifier(self, identifier: str) -> Optional[User]:
+        """Look up user by phone number or email."""
+        stmt = select(User).where((User.phone_number == identifier) | (User.email == identifier)).options(selectinload(User.profile))
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
+
     async def get_by_id(self, user_id: UUID) -> Optional[User]:
         stmt = select(User).where(User.id == user_id).options(selectinload(User.profile))
         result = await self.session.execute(stmt)
@@ -43,6 +54,51 @@ class UserRepository:
         self.session.add(user)
         self.session.add(profile)
         await self.session.flush()
+        await self.session.commit()
+        return user
+
+    async def create_user_with_password(
+        self,
+        full_name: str,
+        phone_number: str,
+        email: Optional[str],
+        password_hash: str,
+        role: str = "FARMER",
+        state_code: str = "IN-MH",
+        district_name: Optional[str] = None,
+        farmer_type: Optional[str] = "SMALL_COMMERCIAL",
+        preferred_language: str = "en"
+    ) -> User:
+        user = User(
+            phone_number=phone_number,
+            email=email,
+            password_hash=password_hash,
+            full_name=full_name,
+            role=role,
+            state_code=state_code,
+            district_name=district_name,
+            farmer_type=farmer_type,
+            preferred_language=preferred_language,
+            has_verified_phone=True,
+            account_status="ACTIVE"
+        )
+        profile = UserProfile(user=user)
+        self.session.add(user)
+        self.session.add(profile)
+        await self.session.flush()
+        await self.session.commit()
+        return user
+
+    async def update_password(self, user: User, password_hash: str) -> User:
+        user.password_hash = password_hash
+        await self.session.flush()
+        await self.session.commit()
+        return user
+
+    async def set_email_verified(self, user: User, status: bool = True) -> User:
+        user.has_verified_email = status
+        await self.session.flush()
+        await self.session.commit()
         return user
 
     async def update_user(self, user: User, data: UserUpdate) -> User:
@@ -56,4 +112,5 @@ class UserRepository:
                 setattr(user.profile, key, value)
                 
         await self.session.flush()
+        await self.session.commit()
         return user

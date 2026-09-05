@@ -16,8 +16,12 @@ pydantic-settings = "^2.1.0"
 redis = {extras = ["hiredis"], version = "^5.0.1"}
 aiokafka = "^0.10.0"
 python-json-logger = "^2.0.7"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 shapely = "^2.0.2"
 geoalchemy2 = "^0.14.4"
+pyproj = "^3.6.1"
+httpx = "^0.26.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"

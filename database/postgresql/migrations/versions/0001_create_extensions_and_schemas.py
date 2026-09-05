@@ -22,7 +22,13 @@ def upgrade() -> None:
     op.execute("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"")
     op.execute("CREATE EXTENSION IF NOT EXISTS \"pgcrypto\"")
     op.execute("CREATE EXTENSION IF NOT EXISTS \"postgis\"")
-    op.execute("CREATE EXTENSION IF NOT EXISTS \"timescaledb\"")
+    op.execute("""
+        DO $$ BEGIN
+            CREATE EXTENSION IF NOT EXISTS "timescaledb";
+        EXCEPTION WHEN OTHERS THEN
+            RAISE NOTICE 'timescaledb extension not available on this server, skipping.';
+        END $$;
+    """)
     op.execute("CREATE EXTENSION IF NOT EXISTS \"pg_trgm\"")
     op.execute("CREATE EXTENSION IF NOT EXISTS \"btree_gist\"")
     op.execute("CREATE EXTENSION IF NOT EXISTS \"pg_stat_statements\"")

@@ -133,9 +133,56 @@ class WeatherService:
 
     async def _fetch_live_or_synthetic_forecast(self, lat: float, lon: float) -> WeatherForecastResponse:
         now = datetime.now(timezone.utc)
-        items = []
+        items: List[DailyForecastItem] = []
+
+        # 1. Try fetching live 7-day forecast from Open-Meteo (free real-time global weather API)
+        try:
+            async with httpx.AsyncClient(timeout=4.0) as client:
+                url = (
+                    f"https://api.open-meteo.com/v1/forecast?"
+                    f"latitude={lat}&longitude={lon}&"
+                    f"daily=temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max,et0_fao_evapotranspiration&"
+                    f"timezone=auto"
+                )
+                resp = await client.get(url)
+                if resp.status_code == 200:
+                    data = resp.json()
+                    daily = data.get("daily", {})
+                    dates = daily.get("time", [])
+                    max_temps = daily.get("temperature_2m_max", [])
+                    min_temps = daily.get("temperature_2m_min", [])
+                    precip = daily.get("precipitation_sum", [])
+                    winds = daily.get("windspeed_10m_max", [])
+
+                    for i in range(min(len(dates), 7)):
+                        rain_val = float(precip[i]) if i < len(precip) and precip[i] is not None else 0.0
+                        cond = "Heavy Rain" if rain_val > 15.0 else ("Light Rain" if rain_val > 0.5 else "Partly Cloudy")
+                        items.append(
+                            DailyForecastItem(
+                                date=dates[i],
+                                temp_min_celsius=float(min_temps[i]) if i < len(min_temps) and min_temps[i] is not None else 20.0,
+                                temp_max_celsius=float(max_temps[i]) if i < len(max_temps) and max_temps[i] is not None else 32.0,
+                                humidity_percent=65.0,
+                                rainfall_probability_percent=80.0 if rain_val > 5.0 else (30.0 if rain_val > 0 else 10.0),
+                                expected_rainfall_mm=round(rain_val, 1),
+                                wind_speed_kmh=float(winds[i]) if i < len(winds) and winds[i] is not None else 12.0,
+                                condition=cond
+                            )
+                        )
+                    if items:
+                        logger.info("Successfully fetched live Open-Meteo forecast", extra={"lat": lat, "lon": lon, "days": len(items)})
+                        return WeatherForecastResponse(
+                            latitude=lat,
+                            longitude=lon,
+                            location_name=f"Plot Node ({round(lat, 3)}°, {round(lon, 3)}°)",
+                            forecast_days=items,
+                            generated_at=now
+                        )
+        except Exception as exc:
+            logger.warning("Open-Meteo API fetch failed; falling back to dynamic date generator", extra={"error": str(exc)})
+
+        # 2. Dynamic daily fallback starting from today's current date
         conditions = ["Sunny", "Partly Cloudy", "Light Rain", "Moderate Rain", "Sunny", "Cloudy", "Clear"]
-        
         for i in range(7):
             d = (now + timedelta(days=i)).strftime("%Y-%m-%d")
             items.append(
@@ -154,7 +201,7 @@ class WeatherService:
         return WeatherForecastResponse(
             latitude=lat,
             longitude=lon,
-            location_name="Agri Region Node",
+            location_name=f"Plot Node ({round(lat, 3)}°, {round(lon, 3)}°)",
             forecast_days=items,
             generated_at=now
         )

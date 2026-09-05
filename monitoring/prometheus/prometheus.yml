@@ -16,65 +16,72 @@ scrape_configs:
   - job_name: 'user-service'
     metrics_path: '/metrics'
     static_configs:
-      - targets: ['host.docker.internal:8009']
+      - targets: ['user-service:8000']
         labels:
           service: 'user-service'
 
   - job_name: 'farm-service'
     metrics_path: '/metrics'
     static_configs:
-      - targets: ['host.docker.internal:8001']
+      - targets: ['farm-service:8001']
         labels:
           service: 'farm-service'
 
   - job_name: 'advisory-service'
     metrics_path: '/metrics'
     static_configs:
-      - targets: ['host.docker.internal:8002']
+      - targets: ['advisory-service:8002']
         labels:
           service: 'advisory-service'
 
   - job_name: 'weather-service'
     metrics_path: '/metrics'
     static_configs:
-      - targets: ['host.docker.internal:8003']
+      - targets: ['weather-service:8003']
         labels:
           service: 'weather-service'
 
   - job_name: 'market-service'
     metrics_path: '/metrics'
     static_configs:
-      - targets: ['host.docker.internal:8004']
+      - targets: ['market-service:8004']
         labels:
           service: 'market-service'
 
   - job_name: 'analytics-service'
     metrics_path: '/metrics'
     static_configs:
-      - targets: ['host.docker.internal:8005']
+      - targets: ['analytics-service:8005']
         labels:
           service: 'analytics-service'
 
   - job_name: 'financial-service'
     metrics_path: '/metrics'
     static_configs:
-      - targets: ['host.docker.internal:8006']
+      - targets: ['financial-service:8006']
         labels:
           service: 'financial-service'
 
   - job_name: 'notification-service'
     metrics_path: '/metrics'
     static_configs:
-      - targets: ['host.docker.internal:8007']
+      - targets: ['notification-service:8007']
         labels:
           service: 'notification-service'
 
   - job_name: 'enterprise-service'
     metrics_path: '/metrics'
     static_configs:
-      - targets: ['host.docker.internal:8008']
+      - targets: ['enterprise-service:8008']
         labels:
           service: 'enterprise-service'
+
+  - job_name: 'iot-service'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['iot-service:8009']
+        labels:
+          service: 'iot-service'
 
   - job_name: 'kong-gateway'
     metrics_path: '/metrics'
@@ -82,7 +89,3 @@ scrape_configs:
       - targets: ['kong:8001']
         labels:
           service: 'kong-gateway'
-
-  - job_name: 'node-exporter'
-    static_configs:
-      - targets: ['host.docker.internal:9100']

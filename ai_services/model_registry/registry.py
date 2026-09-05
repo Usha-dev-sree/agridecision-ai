@@ -81,7 +81,8 @@ class ModelRegistryManager:
         os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
         
         if HAS_SQLALCHEMY:
-            self.engine = create_engine(database_url)
+            connect_args = {"timeout": 30} if database_url.startswith("sqlite") else {}
+            self.engine = create_engine(database_url, connect_args=connect_args)
             Base.metadata.create_all(self.engine)
             self.Session = sessionmaker(bind=self.engine)
             logger_info = "Initialized Model Registry using SQLAlchemy."

@@ -16,7 +16,7 @@ export const Analytics: React.FC = () => {
 
   const activePlot = plots?.find((p) => p.id === selectedPlotId) || plots?.[0];
 
-  // Mock telemetry analytics histories
+  // Demo seed telemetry data (used as fallback when live satellite API is unavailable)
   const ndviData = [
     { date: 'May 01', NDVI: 0.25, EVI: 0.18 },
     { date: 'May 15', NDVI: 0.32, EVI: 0.22 },

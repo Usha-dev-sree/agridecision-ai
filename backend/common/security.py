@@ -122,6 +122,7 @@ def create_refresh_token(
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + (expires_delta or timedelta(days=30))
     to_encode.update({
+        "jti": secrets.token_hex(16),
         "exp": expire,
         "iat": datetime.now(timezone.utc),
         "iss": issuer,

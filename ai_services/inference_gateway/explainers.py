@@ -72,6 +72,13 @@ class GradCamExplainer:
         Returns a normalized 224x224 grayscale heatmap.
         """
         try:
+            import sys, os, ctypes
+            torch_lib = os.path.join(sys.prefix, "Lib", "site-packages", "torch", "lib", "c10.dll")
+            if os.path.exists(torch_lib):
+                handle = ctypes.windll.kernel32.LoadLibraryExW(torch_lib, None, 0x0)
+                if not handle:
+                    raise ImportError("PyTorch c10.dll initialization routine failed on host system")
+                ctypes.windll.kernel32.FreeLibrary(handle)
             import torch
             
             # Prepare tensor

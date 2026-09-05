@@ -18,7 +18,7 @@ RUN pip install poetry==1.7.1
 WORKDIR /app
 
 # Copy dependency files
-COPY pyproject.toml poetry.lock* ./
+COPY backend/services/farm_service/pyproject.toml backend/services/farm_service/poetry.lock* ./
 
 # Install dependencies
 RUN poetry install --only main --no-root
@@ -29,8 +29,8 @@ FROM python:3.11-slim
 # Install runtime spatial libraries
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq5 \
-    libgeos-c1v5 \
-    libproj22 \
+    libgeos-dev \
+    libproj-dev \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

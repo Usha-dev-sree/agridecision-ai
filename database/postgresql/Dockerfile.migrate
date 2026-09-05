@@ -1,0 +1,45 @@
+# ── Database Migration Runner ──────────────────────────────────────────────
+# One-shot container that runs Alembic migrations on startup.
+# Build context: repo root
+#
+# NOTE: asyncpg is a pure-Python PostgreSQL driver; it does NOT require
+# build-essential or gcc. libpq-dev is also not needed at runtime.
+# Removing build-essential reduces image size from ~890 MB → ~220 MB and
+# eliminates the slow gcc/g++ download during CI/CD.
+FROM python:3.11-slim
+
+# Prevent .pyc files and enable unbuffered stdout/stderr for clean logs
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app
+
+WORKDIR /app
+
+# Install only runtime system deps (no build-essential needed for asyncpg)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies needed for migrations
+RUN pip install --no-cache-dir \
+    alembic==1.13.1 \
+    asyncpg==0.29.0 \
+    sqlalchemy[asyncio]==2.0.25 \
+    pydantic==2.5.3 \
+    pydantic-settings==2.1.0 \
+    python-jose[cryptography]==3.3.0 \
+    passlib[bcrypt]==1.7.4 \
+    redis==5.0.1 \
+    aiokafka==0.10.0 \
+    python-dotenv==1.0.1 \
+    numpy==1.26.4 \
+    shapely==2.0.2 \
+    geoalchemy2==0.14.4
+
+# Copy repo code needed for migration models and alembic config
+COPY backend/ /app/backend/
+COPY database/ /app/database/
+COPY .env* /app/
+
+# Run alembic upgrade to latest migration (exits 0 on success / no-op if at head)
+CMD ["alembic", "-c", "database/postgresql/alembic.ini", "upgrade", "head"]

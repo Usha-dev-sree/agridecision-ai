@@ -41,8 +41,12 @@ def upgrade() -> None:
         schema="reference",
     )
     # Cast state_codes and soil_types to PostgreSQL TEXT[]
+    op.execute("ALTER TABLE reference.agro_ecological_zone ALTER COLUMN state_codes DROP DEFAULT")
     op.execute("ALTER TABLE reference.agro_ecological_zone ALTER COLUMN state_codes TYPE TEXT[] USING '{}'::TEXT[]")
+    op.execute("ALTER TABLE reference.agro_ecological_zone ALTER COLUMN state_codes SET DEFAULT '{}'")
+    op.execute("ALTER TABLE reference.agro_ecological_zone ALTER COLUMN soil_types DROP DEFAULT")
     op.execute("ALTER TABLE reference.agro_ecological_zone ALTER COLUMN soil_types TYPE TEXT[] USING '{}'::TEXT[]")
+    op.execute("ALTER TABLE reference.agro_ecological_zone ALTER COLUMN soil_types SET DEFAULT '{}'")
     # Add PostGIS geometry column
     op.execute("ALTER TABLE reference.agro_ecological_zone DROP COLUMN geometry")
     op.execute("SELECT AddGeometryColumn('reference','agro_ecological_zone','geometry',4326,'MULTIPOLYGON',2)")
@@ -78,8 +82,12 @@ def upgrade() -> None:
         schema="reference",
     )
     op.execute("ALTER TABLE reference.crop_variety ALTER COLUMN season TYPE farm.crop_season_enum USING season::farm.crop_season_enum")
+    op.execute("ALTER TABLE reference.crop_variety ALTER COLUMN suitable_aez_codes DROP DEFAULT")
     op.execute("ALTER TABLE reference.crop_variety ALTER COLUMN suitable_aez_codes TYPE TEXT[] USING '{}'::TEXT[]")
+    op.execute("ALTER TABLE reference.crop_variety ALTER COLUMN suitable_aez_codes SET DEFAULT '{}'")
+    op.execute("ALTER TABLE reference.crop_variety ALTER COLUMN suitable_soil_types DROP DEFAULT")
     op.execute("ALTER TABLE reference.crop_variety ALTER COLUMN suitable_soil_types TYPE farm.texture_class_enum[] USING '{}'::farm.texture_class_enum[]")
+    op.execute("ALTER TABLE reference.crop_variety ALTER COLUMN suitable_soil_types SET DEFAULT '{}'")
     op.execute("ALTER TABLE reference.crop_variety ADD CONSTRAINT chk_ph_range CHECK (ph_min BETWEEN 0 AND 14 AND ph_max BETWEEN 0 AND 14)")
     op.create_index("idx_crop_code",       "crop_variety", ["crop_code"],  schema="reference")
     op.create_index("idx_crop_season",     "crop_variety", ["season"],     schema="reference")
@@ -105,7 +113,9 @@ def upgrade() -> None:
         sa.UniqueConstraint("pest_code"),
         schema="reference",
     )
+    op.execute("ALTER TABLE reference.pest_disease ALTER COLUMN affected_crops DROP DEFAULT")
     op.execute("ALTER TABLE reference.pest_disease ALTER COLUMN affected_crops TYPE TEXT[] USING '{}'::TEXT[]")
+    op.execute("ALTER TABLE reference.pest_disease ALTER COLUMN affected_crops SET DEFAULT '{}'")
     op.execute("""ALTER TABLE reference.pest_disease ADD CONSTRAINT chk_pest_category
                   CHECK (category IN ('FUNGAL','BACTERIAL','VIRAL','INSECT','NEMATODE','WEED','NUTRIENT_DEFICIENCY','ABIOTIC'))""")
     op.create_index("idx_pest_code",     "pest_disease", ["pest_code"], schema="reference")
@@ -158,7 +168,9 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(["aez_zone_code"], ["reference.agro_ecological_zone.zone_code"]),
         schema="farm",
     )
+    op.execute("ALTER TABLE farm.farm_plot ALTER COLUMN irrigation_type DROP DEFAULT")
     op.execute("ALTER TABLE farm.farm_plot ALTER COLUMN irrigation_type TYPE farm.irrigation_type_enum USING irrigation_type::farm.irrigation_type_enum")
+    op.execute("ALTER TABLE farm.farm_plot ALTER COLUMN irrigation_type SET DEFAULT 'RAINFED'")
     op.execute("ALTER TABLE farm.farm_plot ADD CONSTRAINT chk_area_range CHECK (area_hectares > 0 AND area_hectares <= 10000)")
     op.execute("ALTER TABLE farm.farm_plot ADD CONSTRAINT chk_lat_range CHECK (centroid_latitude BETWEEN -90 AND 90)")
     op.execute("ALTER TABLE farm.farm_plot ADD CONSTRAINT chk_lon_range CHECK (centroid_longitude BETWEEN -180 AND 180)")
@@ -226,7 +238,9 @@ def upgrade() -> None:
         sa.UniqueConstraint("farm_plot_id"),
         schema="farm",
     )
+    op.execute("ALTER TABLE farm.soil_profile ALTER COLUMN data_source DROP DEFAULT")
     op.execute("ALTER TABLE farm.soil_profile ALTER COLUMN data_source TYPE farm.soil_data_source_enum USING data_source::farm.soil_data_source_enum")
+    op.execute("ALTER TABLE farm.soil_profile ALTER COLUMN data_source SET DEFAULT 'MODEL_ESTIMATED'")
     op.execute("ALTER TABLE farm.soil_profile ALTER COLUMN texture_class TYPE farm.texture_class_enum USING texture_class::farm.texture_class_enum")
     op.execute("ALTER TABLE farm.soil_profile ADD CONSTRAINT chk_ph CHECK (ph_value BETWEEN 3.0 AND 11.0)")
     op.execute("ALTER TABLE farm.soil_profile ADD CONSTRAINT chk_wilting_lt_capacity CHECK (wilting_point_pct < field_capacity_pct OR wilting_point_pct IS NULL OR field_capacity_pct IS NULL)")
@@ -256,7 +270,9 @@ def upgrade() -> None:
         schema="farm",
     )
     op.execute("ALTER TABLE farm.crop_season ALTER COLUMN season_type TYPE farm.crop_season_enum USING season_type::farm.crop_season_enum")
+    op.execute("ALTER TABLE farm.crop_season ALTER COLUMN status DROP DEFAULT")
     op.execute("ALTER TABLE farm.crop_season ALTER COLUMN status TYPE farm.season_status_enum USING status::farm.season_status_enum")
+    op.execute("ALTER TABLE farm.crop_season ALTER COLUMN status SET DEFAULT 'PLANNED'")
     op.execute("ALTER TABLE farm.crop_season ADD CONSTRAINT chk_season_year CHECK (season_year BETWEEN 2000 AND 2100)")
     op.execute("ALTER TABLE farm.crop_season ADD CONSTRAINT chk_harvest_after_sowing CHECK (actual_harvest_date >= sowing_date OR actual_harvest_date IS NULL)")
     op.create_index("idx_season_plot_id",  "crop_season", ["farm_plot_id"], schema="farm")
@@ -285,7 +301,9 @@ def upgrade() -> None:
         schema="farm",
     )
     op.execute("ALTER TABLE farm.iot_device ALTER COLUMN device_type TYPE farm.device_type_enum USING device_type::farm.device_type_enum")
+    op.execute("ALTER TABLE farm.iot_device ALTER COLUMN device_status DROP DEFAULT")
     op.execute("ALTER TABLE farm.iot_device ALTER COLUMN device_status TYPE farm.device_status_enum USING device_status::farm.device_status_enum")
+    op.execute("ALTER TABLE farm.iot_device ALTER COLUMN device_status SET DEFAULT 'PROVISIONED'")
     # Add location_geom PostGIS point
     op.execute("SELECT AddGeometryColumn('farm','iot_device','location_geom',4326,'POINT',2)")
     op.create_index("idx_device_plot_id",  "iot_device", ["farm_plot_id"],   schema="farm")

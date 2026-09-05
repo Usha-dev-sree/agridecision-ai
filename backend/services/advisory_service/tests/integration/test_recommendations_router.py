@@ -2,7 +2,7 @@
 Advisory Service - Integration Tests for Recommendations Router
 """
 import pytest
-from httpx import AsyncClient
+from httpx import ASGITransport, AsyncClient
 from unittest.mock import AsyncMock, MagicMock, patch
 
 
@@ -36,7 +36,8 @@ class TestRecommendationAPI:
         }
         mock_soil.return_value = {"ph_level": 6.5}
 
-        async with AsyncClient(app=app, base_url="http://test") as client:
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://test") as client:
             response = await client.post(
                 "/v1/advisory/recommendations",
                 json={"plot_id": "00000000-0000-0000-0000-000000000002", "season_name": "KHARIF"},

@@ -33,23 +33,45 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
       - Cache-Control: no-store                     (prevents caching of sensitive API responses)
     """
 
+    # Doc UI paths — Swagger UI and ReDoc need relaxed CSP to load JS/CSS
+    _DOC_PATHS = {"/v1/docs", "/docs", "/redoc", "/v1/redoc"}
+
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
         response = await call_next(request)
 
+        content_type = response.headers.get("content-type", "")
+        is_html_doc = (
+            "text/html" in content_type
+            and request.url.path in self._DOC_PATHS
+        )
+
         # XSS / Content Sniffing Prevention
         response.headers["X-Content-Type-Options"] = "nosniff"
-        response.headers["X-Frame-Options"] = "DENY"
         response.headers["X-XSS-Protection"] = "0"
-
-        # Referrer control
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
 
-        # Content Security Policy — tight API policy (APIs don't serve HTML)
-        response.headers["Content-Security-Policy"] = (
-            "default-src 'none'; "
-            "frame-ancestors 'none'; "
-            "form-action 'none';"
-        )
+        if is_html_doc:
+            # ── Swagger / ReDoc pages need scripts, styles, and CDN resources ──
+            # Allow self-hosted assets AND jsdelivr CDN (Swagger UI bundles).
+            response.headers["Content-Security-Policy"] = (
+                "default-src 'self'; "
+                "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com; "
+                "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com https://fonts.googleapis.com; "
+                "font-src 'self' https://fonts.gstatic.com; "
+                "img-src 'self' data: https:; "
+                "connect-src 'self'; "
+                "frame-ancestors 'none';"
+            )
+            # Allow iframes in doc pages (Swagger UI uses them internally)
+            response.headers["X-Frame-Options"] = "SAMEORIGIN"
+        else:
+            # ── Strict policy for all JSON API responses ──
+            response.headers["Content-Security-Policy"] = (
+                "default-src 'none'; "
+                "frame-ancestors 'none'; "
+                "form-action 'none';"
+            )
+            response.headers["X-Frame-Options"] = "DENY"
 
         # HSTS — enforce TLS for 1 year (includeSubDomains + preload for production)
         response.headers["Strict-Transport-Security"] = (
@@ -62,9 +84,12 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "payment=(), usb=(), magnetometer=(), gyroscope=()"
         )
 
-        # No caching for API responses
-        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
-        response.headers["Pragma"] = "no-cache"
+        # No caching for API responses (relax for doc assets so Swagger UI loads fast)
+        if is_html_doc:
+            response.headers["Cache-Control"] = "no-cache"
+        else:
+            response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
+            response.headers["Pragma"] = "no-cache"
 
         # Remove server fingerprinting header if set by upstream
         if "Server" in response.headers:

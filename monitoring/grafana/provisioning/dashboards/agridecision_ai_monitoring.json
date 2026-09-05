@@ -1,0 +1,27 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "id": null,
+  "title": "AgriDecision AI — AI Monitoring",
+  "uid": "agridecision-ai-monitoring",
+  "tags": ["agridecision", "ai"],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "panels": [
+    {
+      "id": 1,
+      "title": "Advisory & Inference Rate",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [{ "expr": "sum(rate(http_requests_total{service=\"advisory-service\"}[5m]))", "legendFormat": "Advisory Inferences / sec" }]
+    },
+    {
+      "id": 2,
+      "title": "AI Inference Latency (P95)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [{ "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{service=\"advisory-service\"}[5m])) by (le))", "legendFormat": "P95 Latency (s)" }]
+    }
+  ]
+}

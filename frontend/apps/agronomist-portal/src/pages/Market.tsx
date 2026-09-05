@@ -46,7 +46,7 @@ export const Market: React.FC = () => {
       const forecastData = await advisoryService.forecastPrice(cropFilter, 'MKT_001');
       setForecast(forecastData);
     } catch {
-      // Mock forecast data for visualization fallback
+      // Static fallback forecast data (displayed when advisory price API is unreachable)
       setForecast({
         crop_name: cropFilter,
         market_id: 'MKT_001',

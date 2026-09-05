@@ -65,7 +65,7 @@ async def run_verification() -> bool:
         
         print(" -> Feature Store & Expectations validation: PASSED")
         passed_steps.append("Feature Store Ingestion & Validation")
-    except Exception as e:
+    except BaseException as e:
         print(f" -> Feature Store validation: FAILED ({e})")
         
     # ----------------------------------------------------
@@ -95,7 +95,7 @@ async def run_verification() -> bool:
         print(f" -> Model Registry Yield Version: {latest_yield['version']} (RMSE: {latest_yield['metrics']['rmse']:.2f})")
         print(" -> Model Training and Registry Logging: PASSED")
         passed_steps.append("Training Pipelines & Model Registry Logging")
-    except Exception as e:
+    except BaseException as e:
         print(f" -> Model Training / Registry: FAILED ({e})")
         
     # ----------------------------------------------------
@@ -117,7 +117,7 @@ async def run_verification() -> bool:
         
         print(" -> Triton Client / ONNX Runtime Inference: PASSED")
         passed_steps.append("Inference Engines")
-    except Exception as e:
+    except BaseException as e:
         print(f" -> Triton / local inference runner: FAILED ({e})")
 
     # ----------------------------------------------------
@@ -145,7 +145,7 @@ async def run_verification() -> bool:
         
         print(" -> Explainable AI (SHAP & Grad-CAM): PASSED")
         passed_steps.append("Explainable AI (SHAP & Grad-CAM)")
-    except Exception as e:
+    except BaseException as e:
         print(f" -> Explainable AI: FAILED ({e})")
 
     # ----------------------------------------------------
@@ -172,7 +172,7 @@ async def run_verification() -> bool:
         
         print(" -> Model Monitoring & Drift Detection: PASSED")
         passed_steps.append("Model Monitoring & Drift Detection")
-    except Exception as e:
+    except BaseException as e:
         print(f" -> Drift Telemetry Monitoring: FAILED ({e})")
 
     # ----------------------------------------------------
@@ -209,7 +209,7 @@ async def run_verification() -> bool:
         
         print(" -> Voice Assistant & Prompt Engine: PASSED")
         passed_steps.append("Voice Assistant & Prompt Engine")
-    except Exception as e:
+    except BaseException as e:
         print(f" -> Voice & LLM: FAILED ({e})")
         
     # ----------------------------------------------------
@@ -232,4 +232,7 @@ async def run_verification() -> bool:
 
 if __name__ == "__main__":
     import asyncio
-    asyncio.run(run_verification())
+    import sys
+    ok = asyncio.run(run_verification())
+    sys.exit(0 if ok else 1)
+

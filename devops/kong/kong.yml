@@ -3,12 +3,17 @@ _transform: true
 
 services:
   - name: user-service
-    url: http://host.docker.internal:8009
+    url: http://host.docker.internal:8000
     routes:
       - name: user-auth-routes
         paths:
           - /v1/auth
           - /v1/users
+          - /v1/docs
+          - /v1/openapi.json
+          - /v1/static
+          - /docs
+          - /openapi.json
         strip_path: false
   - name: farm-service
     url: http://host.docker.internal:8001
@@ -45,6 +50,13 @@ services:
           - /v1/market
           - /v1/commodities
           - /v1/mandi
+        strip_path: false
+  - name: iot-service
+    url: http://host.docker.internal:8009
+    routes:
+      - name: iot-routes
+        paths:
+          - /v1/iot
         strip_path: false
   - name: analytics-service
     url: http://host.docker.internal:8005

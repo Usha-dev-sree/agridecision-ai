@@ -50,7 +50,7 @@ export const Assistant: React.FC = () => {
         advisory: response
       }]);
     } catch {
-      // Mock LLM Response for demo/fallback purposes
+      // Offline fallback advisory response (displayed when backend API is unreachable)
       setMessages((prev) => [...prev, {
         sender: 'assistant',
         text: 'Based on the soil test parameters (pH: 7.2, high clay loam texture) and upcoming weather patterns, here is your agronomic advisory:',

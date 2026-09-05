@@ -15,23 +15,113 @@ import DeviceHubIcon from '@mui/icons-material/DeviceHub';
 import MicIcon from '@mui/icons-material/Mic';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import PersonIcon from '@mui/icons-material/Person';
+import MapIcon from '@mui/icons-material/Map';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import DescriptionIcon from '@mui/icons-material/Description';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import SettingsIcon from '@mui/icons-material/Settings';
+import BusinessIcon from '@mui/icons-material/Business';
+import ScienceIcon from '@mui/icons-material/Science';
 import { useAppSelector } from '@/store/hooks';
 
 const DRAWER_WIDTH = 256;
 
-const navItems = [
-  { label: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
-  { label: 'My Plots', icon: <AgricultureIcon />, path: '/plots' },
-  { label: 'Crop Advisory', icon: <YardIcon />, path: '/advisory' },
-  { label: 'Disease Detection', icon: <BugReportIcon />, path: '/disease' },
-  { label: 'Yield Prediction', icon: <TrendingUpIcon />, path: '/yield' },
-  { label: 'Weather', icon: <WbSunnyIcon />, path: '/weather' },
-  { label: 'Market Prices', icon: <StorefrontIcon />, path: '/market' },
-  { label: 'IoT Devices', icon: <DeviceHubIcon />, path: '/devices' },
-  { label: 'AI Assistant', icon: <MicIcon />, path: '/assistant' },
-  { label: 'Analytics', icon: <BarChartIcon />, path: '/analytics' },
+// ─── Nav items per role ────────────────────────────────────────────────────────
+type NavItem = { label: string; icon: React.ReactNode; path: string };
+
+const FARMER_NAV: NavItem[] = [
+  { label: 'My Dashboard',       icon: <DashboardIcon />,       path: '/farmer-dashboard' },
+  { label: 'My Plots',           icon: <AgricultureIcon />,     path: '/plots' },
+  { label: 'GIS Plot Maps',      icon: <MapIcon />,             path: '/maps' },
+  { label: 'Crop Advisory',      icon: <YardIcon />,            path: '/advisory' },
+  { label: 'Disease Detection',  icon: <BugReportIcon />,       path: '/disease' },
+  { label: 'Yield Prediction',   icon: <TrendingUpIcon />,      path: '/yield' },
+  { label: 'Weather',            icon: <WbSunnyIcon />,         path: '/weather' },
+  { label: 'Market Prices',      icon: <StorefrontIcon />,      path: '/market' },
+  { label: 'Microloans',         icon: <AccountBalanceIcon />,  path: '/loans' },
+  { label: 'AI Assistant',       icon: <MicIcon />,             path: '/assistant' },
+  { label: 'Notifications',      icon: <NotificationsIcon />,   path: '/notifications' },
+  { label: 'Settings',           icon: <SettingsIcon />,        path: '/settings' },
 ];
 
+const AGRONOMIST_NAV: NavItem[] = [
+  { label: 'Agronomist Portal',  icon: <DashboardIcon />,       path: '/dashboard' },
+  { label: 'All Farm Plots',     icon: <AgricultureIcon />,     path: '/plots' },
+  { label: 'GIS Plot Maps',      icon: <MapIcon />,             path: '/maps' },
+  { label: 'Crop Advisory',      icon: <YardIcon />,            path: '/advisory' },
+  { label: 'Disease Detection',  icon: <BugReportIcon />,       path: '/disease' },
+  { label: 'Yield Prediction',   icon: <TrendingUpIcon />,      path: '/yield' },
+  { label: 'Weather',            icon: <WbSunnyIcon />,         path: '/weather' },
+  { label: 'Market Prices',      icon: <StorefrontIcon />,      path: '/market' },
+  { label: 'IoT Devices',        icon: <DeviceHubIcon />,       path: '/devices' },
+  { label: 'AI Assistant',       icon: <MicIcon />,             path: '/assistant' },
+  { label: 'Analytics',          icon: <BarChartIcon />,        path: '/analytics' },
+  { label: 'Reports',            icon: <DescriptionIcon />,     path: '/reports' },
+  { label: 'Notifications',      icon: <NotificationsIcon />,   path: '/notifications' },
+  { label: 'Settings',           icon: <SettingsIcon />,        path: '/settings' },
+];
+
+const ENTERPRISE_NAV: NavItem[] = [
+  { label: 'Enterprise Portal',  icon: <BusinessIcon />,        path: '/enterprise-dashboard' },
+  { label: 'Analytics',          icon: <BarChartIcon />,        path: '/analytics' },
+  { label: 'Reports',            icon: <DescriptionIcon />,     path: '/reports' },
+  { label: 'Contracts',          icon: <DescriptionIcon />,     path: '/contracts' },
+  { label: 'Market Prices',      icon: <StorefrontIcon />,      path: '/market' },
+  { label: 'Microloans',         icon: <AccountBalanceIcon />,  path: '/loans' },
+  { label: 'GIS Maps',           icon: <MapIcon />,             path: '/maps' },
+  { label: 'Notifications',      icon: <NotificationsIcon />,   path: '/notifications' },
+  { label: 'Settings',           icon: <SettingsIcon />,        path: '/settings' },
+];
+
+const RESEARCHER_NAV: NavItem[] = [
+  { label: 'Research Console',   icon: <ScienceIcon />,         path: '/admin-dashboard' },
+  { label: 'Analytics',          icon: <BarChartIcon />,        path: '/analytics' },
+  { label: 'Reports',            icon: <DescriptionIcon />,     path: '/reports' },
+  { label: 'GIS Maps',           icon: <MapIcon />,             path: '/maps' },
+  { label: 'Market Prices',      icon: <StorefrontIcon />,      path: '/market' },
+  { label: 'Crop Advisory',      icon: <YardIcon />,            path: '/advisory' },
+  { label: 'Disease Detection',  icon: <BugReportIcon />,       path: '/disease' },
+  { label: 'Yield Prediction',   icon: <TrendingUpIcon />,      path: '/yield' },
+  { label: 'AI Assistant',       icon: <MicIcon />,             path: '/assistant' },
+  { label: 'Notifications',      icon: <NotificationsIcon />,   path: '/notifications' },
+  { label: 'Settings',           icon: <SettingsIcon />,        path: '/settings' },
+];
+
+function getNavItems(role?: string): NavItem[] {
+  switch (role) {
+    case 'FARMER':      return FARMER_NAV;
+    case 'AGRONOMIST':  return AGRONOMIST_NAV;
+    case 'ENTERPRISE':  return ENTERPRISE_NAV;
+    case 'RESEARCHER':
+    case 'ADMIN':       return RESEARCHER_NAV;
+    default:            return AGRONOMIST_NAV; // sensible fallback
+  }
+}
+
+// ─── Role badge colors ─────────────────────────────────────────────────────────
+function getRoleColor(role?: string): 'primary' | 'success' | 'warning' | 'info' | 'secondary' {
+  switch (role) {
+    case 'FARMER':      return 'success';
+    case 'AGRONOMIST':  return 'primary';
+    case 'ENTERPRISE':  return 'warning';
+    case 'RESEARCHER':
+    case 'ADMIN':       return 'info';
+    default:            return 'secondary';
+  }
+}
+
+function getRoleLabel(role?: string): string {
+  switch (role) {
+    case 'FARMER':      return 'Farmer';
+    case 'AGRONOMIST':  return 'Agronomist';
+    case 'ENTERPRISE':  return 'Enterprise';
+    case 'RESEARCHER':  return 'Researcher';
+    case 'ADMIN':       return 'Admin';
+    default:            return role ?? 'User';
+  }
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
 interface SidebarProps {
   open: boolean;
   onClose: () => void;
@@ -43,6 +133,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ open, onClose, variant }) => {
   const location = useLocation();
   const theme = useTheme();
   const user = useAppSelector((s) => s.auth.user);
+
+  const navItems = getNavItems(user?.role);
+  const roleColor = getRoleColor(user?.role);
+  const roleLabel = getRoleLabel(user?.role);
 
   const handleNav = (path: string) => {
     navigate(path);
@@ -73,18 +167,39 @@ export const Sidebar: React.FC<SidebarProps> = ({ open, onClose, variant }) => {
         </Box>
       </Toolbar>
 
+      {/* Role Badge Banner */}
+      <Box
+        sx={{
+          mx: 2, mb: 1, px: 1.5, py: 0.75, borderRadius: 2,
+          bgcolor: alpha(theme.palette[roleColor].main, 0.12),
+          border: `1px solid ${alpha(theme.palette[roleColor].main, 0.25)}`,
+          display: 'flex', alignItems: 'center', gap: 1,
+        }}
+      >
+        <Box
+          sx={{
+            width: 8, height: 8, borderRadius: '50%',
+            bgcolor: theme.palette[roleColor].main,
+          }}
+        />
+        <Typography variant="caption" fontWeight={700} color={`${roleColor}.main`}>
+          {roleLabel} Portal
+        </Typography>
+      </Box>
+
       <Divider sx={{ opacity: 0.15 }} />
 
-      {/* Nav Items */}
-      <List sx={{ flex: 1, py: 1.5 }}>
+      {/* Nav Items — role-filtered */}
+      <List sx={{ flex: 1, py: 1.5, overflowY: 'auto' }}>
         {navItems.map((item) => {
-          const isActive = location.pathname.startsWith(item.path);
+          const isActive = location.pathname === item.path ||
+            (item.path !== '/' && location.pathname.startsWith(item.path));
           return (
             <ListItemButton
               key={item.path}
               selected={isActive}
               onClick={() => handleNav(item.path)}
-              sx={{ mx: 1, mb: 0.5 }}
+              sx={{ mx: 1, mb: 0.5, borderRadius: 1.5 }}
             >
               <ListItemIcon
                 sx={{
@@ -124,9 +239,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ open, onClose, variant }) => {
           <Box sx={{ flex: 1, minWidth: 0 }}>
             <Typography variant="body2" fontWeight={600} noWrap>{user?.full_name}</Typography>
             <Chip
-              label={user?.role}
+              label={roleLabel}
               size="small"
-              color="primary"
+              color={roleColor}
               variant="outlined"
               sx={{ height: 18, fontSize: '0.65rem', mt: 0.25 }}
             />

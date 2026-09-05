@@ -1,0 +1,21 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "id": null,
+  "title": "AgriDecision AI — Logs",
+  "uid": "agridecision-logs",
+  "tags": ["agridecision", "logs"],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "panels": [
+    {
+      "id": 1,
+      "title": "Application Logs (Loki)",
+      "type": "logs",
+      "gridPos": { "h": 14, "w": 24, "x": 0, "y": 0 },
+      "datasource": { "type": "loki", "uid": "P8E80F9AEF21F6940" },
+      "targets": [{ "expr": "{job=~\".+\"}", "refId": "A" }]
+    }
+  ]
+}

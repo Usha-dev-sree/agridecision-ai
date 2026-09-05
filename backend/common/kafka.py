@@ -25,23 +25,30 @@ class KafkaManager:
 
     async def start_producer(self) -> None:
         """Initialize and start the high-performance Kafka producer."""
-        self.producer = AIOKafkaProducer(
-            bootstrap_servers=self.bootstrap_servers,
-            value_serializer=lambda v: json.dumps(v).encode('utf-8'),
-            compression_type="gzip",     # Compresses messages to save bandwidth
-            linger_ms=10,                 # Batches events for 10ms to increase throughput
-            max_batch_size=16384,         # 16KB max batch size
-            max_request_size=1048576,     # 1MB max request
-            acks="all",                   # Durability guarantee
-        )
-        await self.producer.start()
-        logger.info("High-throughput Kafka producer started", extra={"bootstrap_servers": self.bootstrap_servers})
+        try:
+            self.producer = AIOKafkaProducer(
+                bootstrap_servers=self.bootstrap_servers,
+                value_serializer=lambda v: json.dumps(v).encode('utf-8'),
+                compression_type="gzip",     # Compresses messages to save bandwidth
+                linger_ms=10,                 # Batches events for 10ms to increase throughput
+                max_batch_size=16384,         # 16KB max batch size
+                max_request_size=1048576,     # 1MB max request
+                acks="all",                   # Durability guarantee
+            )
+            await self.producer.start()
+            logger.info("High-throughput Kafka producer started", extra={"bootstrap_servers": self.bootstrap_servers})
+        except Exception as e:
+            logger.warning(f"Kafka producer connection failed: {e}. Running in standalone offline mode.")
+            self.producer = None
 
     async def stop_producer(self) -> None:
         """Stop the Kafka producer gracefully."""
         if self.producer:
-            await self.producer.stop()
-            logger.info("Kafka producer stopped")
+            try:
+                await self.producer.stop()
+                logger.info("Kafka producer stopped")
+            except Exception:
+                pass
 
     async def publish(self, topic: str, message: Dict[str, Any], key: Optional[str] = None) -> None:
         """Publish a message to a Kafka topic asynchronously."""

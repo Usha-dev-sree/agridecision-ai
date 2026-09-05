@@ -71,10 +71,12 @@ def run_training_pipeline() -> None:
     train_size = 1000
     X_train, X_test = X[:train_size], X[train_size:]
     y_train, y_test = y[:train_size], y[train_size:]
+    print(" -> Data generated.")
     
     # 2. Train Model
-    model = RandomForestClassifier(n_estimators=50, random_state=42)
+    model = RandomForestClassifier(n_estimators=50, random_state=42, n_jobs=1)
     model.fit(X_train, y_train)
+    print(" -> Model fitted.")
     
     # 3. Evaluate Model
     y_pred = model.predict(X_test)
@@ -82,6 +84,7 @@ def run_training_pipeline() -> None:
         y_true=y_test.tolist(),
         y_pred=y_pred.tolist()
     )
+    print(" -> Metrics evaluated.")
     
     # 4. Save & Export to ONNX
     output_dir = "c:/AGRICULTURE PROJECT/agridecision-ai/ai_services/inference_gateway/model_repository/crop_recommendation/1"
@@ -89,13 +92,11 @@ def run_training_pipeline() -> None:
     onnx_path = os.path.join(output_dir, "model.onnx")
     
     try:
-        from skl2onnx.common.data_types import FloatTensorType
-        initial_types = [("float_input", FloatTensorType([None, 7]))]
-        export_sklearn_to_onnx(model, initial_types, onnx_path)
-    except Exception as e:
-        print(f"Skipping native skl2onnx conversion: {e}")
-        # Call mock exporter
         export_sklearn_to_onnx(model, [], onnx_path)
+    except BaseException as e:
+        print(f"Skipping native skl2onnx conversion: {e}")
+        export_sklearn_to_onnx(model, [], onnx_path)
+    print(" -> ONNX exported.")
         
     # 5. Log in Model Registry
     registry = ModelRegistryManager()

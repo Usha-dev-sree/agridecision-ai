@@ -6,8 +6,10 @@ import { Topbar } from './Topbar';
 import { OfflineBanner } from '@/components/common/OfflineBanner';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { toggleSidebar, setSidebarOpen, hideSnackbar } from '@/store/slices/uiSlice';
+import { useCurrentUser } from '@/hooks/useAuth';
 
 export const AppLayout: React.FC = () => {
+  useCurrentUser();
   const theme = useTheme();
   const dispatch = useAppDispatch();
   const sidebarOpen = useAppSelector((s) => s.ui.sidebarOpen);

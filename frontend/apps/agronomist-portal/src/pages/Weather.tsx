@@ -39,7 +39,7 @@ export const Weather: React.FC = () => {
         setForecast(data);
       } catch (err: any) {
         setError('Failed to fetch weather forecast data. Showing fallback metrics.');
-        // Fallback mock forecast data for better user experience
+        // Fallback static forecast data displayed when live Open-Meteo API is unreachable
         setForecast([
           { date: '2026-07-24', temp_max_c: 32.5, temp_min_c: 24.1, precipitation_mm: 12.5, windspeed_max_kmh: 18.2, solar_radiation_mj_m2: 22.4, eto_fao_mm_day: 4.8 },
           { date: '2026-07-25', temp_max_c: 31.0, temp_min_c: 23.5, precipitation_mm: 22.0, windspeed_max_kmh: 22.1, solar_radiation_mj_m2: 18.1, eto_fao_mm_day: 3.9 },

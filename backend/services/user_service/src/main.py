@@ -15,6 +15,7 @@ from backend.common.middleware.security_middleware import (
     RequestSizeLimitMiddleware,
     SecurityHeadersMiddleware,
 )
+from backend.common.metrics import instrument_app
 from backend.services.user_service.src.config import settings
 from backend.services.user_service.src.dependencies import db_manager, kafka_manager, redis_client
 from backend.services.user_service.src.routers import auth, users
@@ -45,6 +46,9 @@ app = FastAPI(
     docs_url="/v1/docs",
     openapi_url="/v1/openapi.json",
 )
+
+# Prometheus /metrics endpoint
+instrument_app(app)
 
 # Exception Handlers
 app.add_exception_handler(APIException, api_exception_handler)

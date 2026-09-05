@@ -15,8 +15,9 @@ exclude = ["tests/", "migrations/"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-testpaths = ["tests"]
-addopts = "-v --tb=short --cov=src --cov-report=term-missing"
+pythonpath = ["."]
+testpaths = ["backend", "testing", "ai_services"]
+addopts = "-v --tb=short"
 
 [tool.coverage.run]
 source = ["src"]
