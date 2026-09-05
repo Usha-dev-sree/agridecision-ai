@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
 
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -37,7 +37,7 @@ jobs:
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -65,7 +65,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout GitOps repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
 
       - name: Update Helm tag values
         run: |

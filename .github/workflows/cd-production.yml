@@ -23,7 +23,7 @@ jobs:
     name: Pre-Deployment Security Gate
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Verify Cosign Image Signatures
         uses: sigstore/cosign-installer@v3
       - name: Verify all service images are signed
@@ -47,7 +47,7 @@ jobs:
     needs: pre-deployment-gate
     environment: production
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install ArgoCD CLI
         run: |
           curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
