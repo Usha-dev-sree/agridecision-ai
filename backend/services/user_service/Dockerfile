@@ -16,7 +16,7 @@ RUN pip install poetry==1.7.1
 WORKDIR /app
 
 # Copy dependency files
-COPY pyproject.toml poetry.lock* ./
+COPY backend/services/user_service/pyproject.toml backend/services/user_service/poetry.lock* ./
 
 # Install dependencies
 RUN poetry install --only main --no-root
