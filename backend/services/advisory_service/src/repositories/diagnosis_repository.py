@@ -2,13 +2,11 @@
 Advisory Service - Diagnosis Repository
 Handles persistence of image diagnosis records.
 """
-from typing import Optional
 from uuid import UUID
 
+from backend.services.advisory_service.src.models.image_diagnosis import ImageDiagnosis
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from backend.services.advisory_service.src.models.image_diagnosis import ImageDiagnosis
 
 
 class DiagnosisRepository:
@@ -20,7 +18,7 @@ class DiagnosisRepository:
         await self.session.flush()
         return diagnosis
 
-    async def get_by_id(self, diagnosis_id: UUID) -> Optional[ImageDiagnosis]:
+    async def get_by_id(self, diagnosis_id: UUID) -> ImageDiagnosis | None:
         stmt = select(ImageDiagnosis).where(ImageDiagnosis.id == diagnosis_id)
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()

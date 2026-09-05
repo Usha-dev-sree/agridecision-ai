@@ -2,9 +2,8 @@
 Market Service - Core Business Logic
 """
 import json
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from decimal import Decimal
-from typing import List, Optional
 
 from redis.asyncio import Redis
 from sqlalchemy import select
@@ -28,7 +27,7 @@ class MarketService:
         self.redis = redis
 
     async def get_mandi_prices(
-        self, commodity: Optional[str] = None, state: Optional[str] = None, mandi_name: Optional[str] = None
+        self, commodity: str | None = None, state: str | None = None, mandi_name: str | None = None
     ) -> MandiPricesResponse:
         """Fetch Mandi commodity prices with Redis caching."""
         cache_key = f"market:prices:{commodity or 'all'}:{state or 'all'}:{mandi_name or 'all'}"
@@ -78,7 +77,7 @@ class MarketService:
                     min_price=Decimal("2100.00"),
                     max_price=Decimal("2250.00"),
                     modal_price=Decimal("2183.00"),
-                    reported_date=datetime.now(timezone.utc)
+                    reported_date=datetime.now(UTC)
                 ),
                 MandiPriceItem(
                     state="Haryana",
@@ -89,7 +88,7 @@ class MarketService:
                     min_price=Decimal("3800.00"),
                     max_price=Decimal("4150.00"),
                     modal_price=Decimal("4020.00"),
-                    reported_date=datetime.now(timezone.utc)
+                    reported_date=datetime.now(UTC)
                 )
             ]
 
@@ -99,7 +98,7 @@ class MarketService:
 
     async def get_price_forecast(self, commodity: str, mandi_name: str) -> MarketPriceForecastResponse:
         """Get 14-day Prophet/LSTM AI price forecast."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         current_price = Decimal("2183.00")
         forecast_points = []
 

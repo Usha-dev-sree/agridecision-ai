@@ -5,8 +5,7 @@ and Redis caching. Uses the AgroRiskScoringEngine for credit score computation.
 """
 import json
 import uuid
-from datetime import datetime, timezone
-from typing import Optional
+from datetime import UTC, datetime
 from uuid import UUID
 
 from redis.asyncio import Redis
@@ -33,7 +32,7 @@ CACHE_TTL = 900  # 15 minutes
 class FinancialService:
     """Farm-centric financial services: credit scoring and micro-loan origination."""
 
-    def __init__(self, db: AsyncSession, redis: Optional[Redis] = None):
+    def __init__(self, db: AsyncSession, redis: Redis | None = None):
         self._db = db
         self._redis = redis
         self._engine = AgroRiskScoringEngine()
@@ -73,7 +72,7 @@ class FinancialService:
                 "category": category,
                 "max_loan": max_loan,
                 "rate": interest_rate,
-                "evaluated_at": datetime.now(timezone.utc),
+                "evaluated_at": datetime.now(UTC),
             },
         )
         await self._db.commit()
@@ -165,7 +164,7 @@ class FinancialService:
                 "rate": interest_rate,
                 "emi": round(emi, 2),
                 "status": loan_status,
-                "applied_at": datetime.now(timezone.utc),
+                "applied_at": datetime.now(UTC),
             },
         )
         await self._db.commit()

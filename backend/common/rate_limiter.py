@@ -4,8 +4,9 @@ AgriDecision AI - Redis Sliding Window Rate Limiter
 Provides sliding window rate limiting to protect API endpoints against DoS, brute force, and abuse.
 """
 import time
-from typing import Optional
+
 from redis.asyncio import Redis
+
 from backend.common.exceptions import APIException
 
 

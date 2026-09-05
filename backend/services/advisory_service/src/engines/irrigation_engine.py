@@ -5,9 +5,8 @@ Used to calculate daily irrigation water requirements for a given farm plot.
 Reference: Allen et al., 1998 – FAO Irrigation and Drainage Paper No. 56.
 """
 import math
-from datetime import date, timedelta
-from decimal import Decimal
-from typing import Any, Dict, List, Optional
+from datetime import date
+from typing import Any
 
 from backend.common.logging import get_logger
 
@@ -16,7 +15,7 @@ logger = get_logger(__name__)
 # Crop coefficient (Kc) lookup table per growth stage.
 # A full implementation would use FAO-56 Annex 8 tables per crop/growth stage/season.
 # These are representative mid-season Kc values for common Indian crops.
-KC_TABLE: Dict[str, float] = {
+KC_TABLE: dict[str, float] = {
     "rice": 1.20,
     "wheat": 1.15,
     "maize": 1.20,
@@ -90,11 +89,11 @@ def compute_eto_penman_monteith(
 
 
 def calculate_irrigation_schedule(
-    weather_forecast: List[Dict[str, Any]],
-    crop_name: Optional[str] = None,
+    weather_forecast: list[dict[str, Any]],
+    crop_name: str | None = None,
     elevation_m: float = 200.0,
     humidity_percent: float = 70.0,
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """
     Calculate a multi-day irrigation schedule from weather forecast data.
 

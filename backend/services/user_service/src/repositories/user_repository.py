@@ -2,38 +2,36 @@
 User Service - User Repository
 Handles database operations for iam.user and iam.user_profile.
 """
-from typing import Optional
 from uuid import UUID
-
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 
 from backend.services.user_service.src.models.user import User, UserProfile
 from backend.services.user_service.src.schemas.user import UserBase, UserUpdate
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 
 class UserRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_by_phone(self, phone_number: str) -> Optional[User]:
+    async def get_by_phone(self, phone_number: str) -> User | None:
         stmt = select(User).where(User.phone_number == phone_number).options(selectinload(User.profile))
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
-    async def get_by_email(self, email: str) -> Optional[User]:
+    async def get_by_email(self, email: str) -> User | None:
         stmt = select(User).where(User.email == email).options(selectinload(User.profile))
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
-    async def get_by_identifier(self, identifier: str) -> Optional[User]:
+    async def get_by_identifier(self, identifier: str) -> User | None:
         """Look up user by phone number or email."""
         stmt = select(User).where((User.phone_number == identifier) | (User.email == identifier)).options(selectinload(User.profile))
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
-    async def get_by_id(self, user_id: UUID) -> Optional[User]:
+    async def get_by_id(self, user_id: UUID) -> User | None:
         stmt = select(User).where(User.id == user_id).options(selectinload(User.profile))
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
@@ -61,12 +59,12 @@ class UserRepository:
         self,
         full_name: str,
         phone_number: str,
-        email: Optional[str],
+        email: str | None,
         password_hash: str,
         role: str = "FARMER",
         state_code: str = "IN-MH",
-        district_name: Optional[str] = None,
-        farmer_type: Optional[str] = "SMALL_COMMERCIAL",
+        district_name: str | None = None,
+        farmer_type: str | None = "SMALL_COMMERCIAL",
         preferred_language: str = "en"
     ) -> User:
         user = User(

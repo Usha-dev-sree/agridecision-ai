@@ -4,15 +4,13 @@ SQLAlchemy ORM for advisory.crop_recommendation.
 """
 from datetime import datetime
 from decimal import Decimal
-from typing import Optional
 from uuid import UUID, uuid4
 
-from sqlalchemy import DateTime, ForeignKey, Numeric, String, Text, func
+from backend.common.database import Base
+from sqlalchemy import DateTime, Numeric, String, Text, func
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column
-
-from backend.common.database import Base
 
 
 class CropRecommendation(Base):
@@ -30,9 +28,9 @@ class CropRecommendation(Base):
     recommendations: Mapped[dict] = mapped_column(JSONB, nullable=False, server_default="[]")
 
     # Input feature snapshot (for auditability and model retraining)
-    input_features: Mapped[Optional[dict]] = mapped_column(JSONB, server_default="{}")
+    input_features: Mapped[dict | None] = mapped_column(JSONB, server_default="{}")
 
     # Confidence score of the top recommendation [0.0 – 1.0]
-    top_confidence_score: Mapped[Optional[Decimal]] = mapped_column(Numeric(4, 3))
+    top_confidence_score: Mapped[Decimal | None] = mapped_column(Numeric(4, 3))
 
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)

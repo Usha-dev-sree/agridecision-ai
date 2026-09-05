@@ -4,15 +4,23 @@ SQLAlchemy models for iam.subscription and iam.payment_record.
 """
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Optional
 from uuid import UUID, uuid4
 
-from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, Numeric, SmallInteger, String, Text, func
+from backend.common.database import Base
+from sqlalchemy import (
+    Boolean,
+    Date,
+    DateTime,
+    ForeignKey,
+    Numeric,
+    SmallInteger,
+    String,
+    Text,
+    func,
+)
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column
-
-from backend.common.database import Base
 
 
 class Subscription(Base):
@@ -30,8 +38,8 @@ class Subscription(Base):
     has_voice_advisory: Mapped[bool] = mapped_column(Boolean, server_default="false", nullable=False)
     has_api_access: Mapped[bool] = mapped_column(Boolean, server_default="false", nullable=False)
     
-    billing_period_start: Mapped[Optional[date]] = mapped_column(Date)
-    billing_period_end: Mapped[Optional[date]] = mapped_column(Date)
+    billing_period_start: Mapped[date | None] = mapped_column(Date)
+    billing_period_end: Mapped[date | None] = mapped_column(Date)
     auto_renew: Mapped[bool] = mapped_column(Boolean, server_default="true", nullable=False)
     
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
@@ -47,7 +55,7 @@ class PaymentRecord(Base):
     subscription_id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), ForeignKey("iam.subscription.id", ondelete="RESTRICT"), nullable=False)
     
     gateway_order_id: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
-    gateway_payment_id: Mapped[Optional[str]] = mapped_column(String(100))
+    gateway_payment_id: Mapped[str | None] = mapped_column(String(100))
     gateway_name: Mapped[str] = mapped_column(String(30), server_default="RAZORPAY", nullable=False)
     
     amount_inr: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
@@ -56,7 +64,7 @@ class PaymentRecord(Base):
     plan_purchased: Mapped[str] = mapped_column(Text, nullable=False)
     
     idempotency_key: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), nullable=False, unique=True)
-    gateway_response: Mapped[Optional[dict]] = mapped_column(JSONB, server_default="{}")
+    gateway_response: Mapped[dict | None] = mapped_column(JSONB, server_default="{}")
     
-    paid_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    paid_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)

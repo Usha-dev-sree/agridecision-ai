@@ -2,11 +2,9 @@
 Advisory Service - Weather Client
 Fetches weather forecast data from Open-Meteo for irrigation calculations.
 """
-from datetime import date
-from typing import Any, Dict, List
+from typing import Any
 
 import httpx
-
 from backend.common.exceptions import APIException
 from backend.common.logging import get_logger
 from backend.services.advisory_service.src.config import settings
@@ -22,7 +20,7 @@ class WeatherClient:
 
     async def get_forecast(
         self, lat: float, lon: float, forecast_days: int = 7
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Fetch hourly/daily weather forecast required for Penman-Monteith ETo.
         Variables: temperature_2m_max, temperature_2m_min, precipitation_sum,

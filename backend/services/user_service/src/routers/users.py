@@ -4,13 +4,12 @@ Endpoints for user profile retrieval and updates.
 """
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, status
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from backend.services.user_service.src.dependencies import get_current_user, get_db
 from backend.services.user_service.src.repositories.user_repository import UserRepository
 from backend.services.user_service.src.schemas.user import UserDetailResponse, UserUpdate
 from backend.services.user_service.src.services.user_service import UserService
+from fastapi import APIRouter, Depends, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/v1/users", tags=["Users"])
 

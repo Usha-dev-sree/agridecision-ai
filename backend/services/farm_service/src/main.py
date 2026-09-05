@@ -5,9 +5,6 @@ FastAPI application initialization, security middleware wiring, and lifecycle ev
 import os
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-
 from backend.common.exceptions import APIException, api_exception_handler, general_exception_handler
 from backend.common.logging import get_logger, setup_logging
 from backend.common.metrics import instrument_app
@@ -19,6 +16,8 @@ from backend.common.middleware.security_middleware import (
 from backend.services.farm_service.src.config import settings
 from backend.services.farm_service.src.dependencies import db_manager, kafka_manager, redis_client
 from backend.services.farm_service.src.routers import boundaries, devices, plots, seasons, soil
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 setup_logging(settings.APP_NAME, settings.LOG_LEVEL)
 logger = get_logger(__name__)

@@ -5,8 +5,8 @@ Uses one KafkaConsumerRunner per topic.
 """
 import asyncio
 import json
-from datetime import datetime, timezone
-from typing import Any, Dict
+from datetime import UTC, datetime
+from typing import Any
 
 from redis.asyncio import Redis
 
@@ -33,7 +33,7 @@ async def _persist_notification(
     channel: str,
     title: str,
     body: str,
-    metadata: Dict[str, Any],
+    metadata: dict[str, Any],
 ) -> None:
     """Write notification record to PostgreSQL notifications table."""
     async with db_manager.session() as session:
@@ -50,13 +50,13 @@ async def _persist_notification(
                 "title": title,
                 "body": body,
                 "metadata": json.dumps(metadata),
-                "created_at": datetime.now(timezone.utc),
+                "created_at": datetime.now(UTC),
             },
         )
         await session.commit()
 
 
-async def _handle_weather_alert(event: Dict[str, Any], db_manager: DatabaseManager, redis: Redis) -> None:
+async def _handle_weather_alert(event: dict[str, Any], db_manager: DatabaseManager, redis: Redis) -> None:
     """Process a weather alert event and dispatch notifications to affected farm users."""
     event_id = f"weather:{event.get('alert_type')}:{event.get('latitude')}:{event.get('longitude')}"
     if await _is_duplicate(redis, event_id):
@@ -79,7 +79,7 @@ async def _handle_weather_alert(event: Dict[str, Any], db_manager: DatabaseManag
         logger.error("Failed to persist weather alert notification", extra={"error": str(e)})
 
 
-async def _handle_market_price_update(event: Dict[str, Any], db_manager: DatabaseManager, redis: Redis) -> None:
+async def _handle_market_price_update(event: dict[str, Any], db_manager: DatabaseManager, redis: Redis) -> None:
     """Process a market price update event and dispatch notifications to interested users."""
     commodity = event.get("commodity", "Unknown")
     price_change = event.get("price_change_pct", 0.0)
@@ -105,7 +105,7 @@ async def _handle_market_price_update(event: Dict[str, Any], db_manager: Databas
         logger.error("Failed to persist market notification", extra={"error": str(e)})
 
 
-async def _handle_farm_event(event: Dict[str, Any], db_manager: DatabaseManager, redis: Redis) -> None:
+async def _handle_farm_event(event: dict[str, Any], db_manager: DatabaseManager, redis: Redis) -> None:
     """Process a generic farm event (e.g., harvest reminder, season start)."""
     event_type = event.get("event_type", "FARM_EVENT")
     event_id = f"farm:{event_type}:{event.get('farm_id')}:{event.get('timestamp', '')}"
@@ -134,7 +134,7 @@ def _build_handler(topic: str, db_manager: DatabaseManager, redis: Redis):
     }
     handler_fn = _topic_handlers.get(topic)
 
-    async def handler(event: Dict[str, Any]) -> None:
+    async def handler(event: dict[str, Any]) -> None:
         if handler_fn:
             await handler_fn(event, db_manager, redis)
         else:

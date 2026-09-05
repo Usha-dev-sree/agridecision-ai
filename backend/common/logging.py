@@ -4,14 +4,14 @@ Provides JSON structured logging suitable for Loki/Elasticsearch.
 """
 import logging
 import sys
-from typing import Any, Dict
+from typing import Any
 
 from pythonjsonlogger import jsonlogger
 
 
 class CustomJsonFormatter(jsonlogger.JsonFormatter):
     """Custom JSON formatter injecting standard contextual fields."""
-    def add_fields(self, log_record: Dict[str, Any], record: logging.LogRecord, message_dict: Dict[str, Any]) -> None:
+    def add_fields(self, log_record: dict[str, Any], record: logging.LogRecord, message_dict: dict[str, Any]) -> None:
         super().add_fields(log_record, record, message_dict)
         if not log_record.get('timestamp'):
             # This uses the current time in ISO8601 format
@@ -28,10 +28,10 @@ def setup_logging(service_name: str, log_level: str = "INFO") -> None:
     Call this at the application entrypoint (e.g., main.py).
     """
     logger = logging.getLogger()
-    
+
     numeric_level = getattr(logging, log_level.upper(), logging.INFO)
     logger.setLevel(numeric_level)
-    
+
     # Remove existing handlers to avoid duplicates
     for handler in logger.handlers[:]:
         logger.removeHandler(handler)

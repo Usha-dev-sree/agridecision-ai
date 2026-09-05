@@ -3,15 +3,13 @@ User Service - Session & OTP Repository
 Handles Redis operations for HMAC-hashed OTPs and Postgres operations for User Sessions.
 """
 from datetime import datetime, timezone
-from typing import Optional
 from uuid import UUID
-
-from redis.asyncio import Redis
-from sqlalchemy import select, update
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.common.security import hash_otp, verify_otp_hash
 from backend.services.user_service.src.models.session import UserSession
+from redis.asyncio import Redis
+from sqlalchemy import select, update
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class SessionRepository:
@@ -32,7 +30,7 @@ class SessionRepository:
             return False
         return verify_otp_hash(candidate_otp, stored_hash, secret_key)
 
-    async def get_otp(self, phone_number: str) -> Optional[str]:
+    async def get_otp(self, phone_number: str) -> str | None:
         """Deprecated: use verify_otp for timing-attack safe comparison."""
         key = f"otp:{phone_number}"
         return await self.redis.get(key)
@@ -56,8 +54,8 @@ class SessionRepository:
     # --- JWT Postgres Operations ---
     async def create_session(
         self, user_id: UUID, refresh_token_hash: str, expires_at: datetime,
-        device_fingerprint: Optional[str] = None, device_platform: Optional[str] = None,
-        ip_address: Optional[str] = None, user_agent: Optional[str] = None
+        device_fingerprint: str | None = None, device_platform: str | None = None,
+        ip_address: str | None = None, user_agent: str | None = None
     ) -> UserSession:
         user_session = UserSession(
             user_id=user_id,
@@ -73,7 +71,7 @@ class SessionRepository:
         await self.session.flush()
         return user_session
 
-    async def get_session_by_token(self, refresh_token_hash: str) -> Optional[UserSession]:
+    async def get_session_by_token(self, refresh_token_hash: str) -> UserSession | None:
         stmt = select(UserSession).where(
             UserSession.refresh_token_hash == refresh_token_hash,
             UserSession.is_active == True,

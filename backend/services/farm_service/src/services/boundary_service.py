@@ -3,17 +3,15 @@ Farm Service - Boundary Service (Business Logic)
 Handles geometric operations using Shapely and PostGIS storage.
 """
 import json
-from typing import Tuple
 from uuid import UUID
 
+import pyproj
+from backend.common.exceptions import NotFoundException, ValidationException
+from backend.services.farm_service.src.repositories.plot_repository import PlotRepository
+from backend.services.farm_service.src.schemas.plots import BoundaryResponse, GeoJSONFeature
 from shapely.geometry import Polygon, shape
 from shapely.ops import transform
 from shapely.validation import make_valid
-import pyproj
-
-from backend.common.exceptions import ValidationException, NotFoundException
-from backend.services.farm_service.src.repositories.plot_repository import PlotRepository
-from backend.services.farm_service.src.schemas.plots import GeoJSONFeature, BoundaryResponse
 
 
 class BoundaryService:

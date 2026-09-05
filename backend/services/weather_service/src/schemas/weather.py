@@ -2,8 +2,8 @@
 Weather Service - Pydantic Schemas
 """
 from datetime import datetime
-from typing import List, Optional
-from pydantic import BaseModel, Field
+
+from pydantic import BaseModel
 
 
 class WeatherCurrentResponse(BaseModel):
@@ -33,8 +33,8 @@ class DailyForecastItem(BaseModel):
 class WeatherForecastResponse(BaseModel):
     latitude: float
     longitude: float
-    location_name: Optional[str] = "Farm Location"
-    forecast_days: List[DailyForecastItem]
+    location_name: str | None = "Farm Location"
+    forecast_days: list[DailyForecastItem]
     generated_at: datetime
 
 

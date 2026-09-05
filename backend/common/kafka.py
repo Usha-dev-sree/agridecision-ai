@@ -7,7 +7,8 @@ Provides async Kafka producer and consumer wrappers tuned for high throughput:
   - Buffer memory set to 32MB for high-burst event streaming
 """
 import json
-from typing import Any, Callable, Dict, Optional
+from collections.abc import Callable
+from typing import Any
 
 from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
 
@@ -18,10 +19,10 @@ logger = get_logger(__name__)
 
 class KafkaManager:
     """Manages high-throughput Kafka connections and message publishing."""
-    
+
     def __init__(self, bootstrap_servers: str):
         self.bootstrap_servers = bootstrap_servers
-        self.producer: Optional[AIOKafkaProducer] = None
+        self.producer: AIOKafkaProducer | None = None
 
     async def start_producer(self) -> None:
         """Initialize and start the high-performance Kafka producer."""
@@ -50,11 +51,11 @@ class KafkaManager:
             except Exception:
                 pass
 
-    async def publish(self, topic: str, message: Dict[str, Any], key: Optional[str] = None) -> None:
+    async def publish(self, topic: str, message: dict[str, Any], key: str | None = None) -> None:
         """Publish a message to a Kafka topic asynchronously."""
         if not self.producer:
             raise Exception("Kafka producer is not initialized")
-        
+
         encoded_key = key.encode('utf-8') if key else None
         try:
             await self.producer.send(topic, value=message, key=encoded_key)
@@ -66,19 +67,19 @@ class KafkaManager:
 
 class KafkaConsumerRunner:
     """Base runner for high-concurrency Kafka consumers."""
-    
+
     def __init__(
-        self, 
-        bootstrap_servers: str, 
-        group_id: str, 
-        topic: str, 
-        handler: Callable[[Dict[str, Any]], Any]
+        self,
+        bootstrap_servers: str,
+        group_id: str,
+        topic: str,
+        handler: Callable[[dict[str, Any]], Any]
     ):
         self.bootstrap_servers = bootstrap_servers
         self.group_id = group_id
         self.topic = topic
         self.handler = handler
-        self.consumer: Optional[AIOKafkaConsumer] = None
+        self.consumer: AIOKafkaConsumer | None = None
         self._running = False
 
     async def start(self) -> None:
@@ -104,7 +105,7 @@ class KafkaConsumerRunner:
                     await self.handler(msg.value)
                 except Exception as e:
                     logger.error(
-                        "Error processing message", 
+                        "Error processing message",
                         extra={"topic": self.topic, "error": str(e), "msg_value": msg.value}
                     )
         finally:

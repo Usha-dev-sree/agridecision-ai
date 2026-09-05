@@ -3,7 +3,7 @@ Advisory Service - Diagnosis Schemas
 """
 from datetime import datetime
 from decimal import Decimal
-from typing import Any, Dict, List, Optional
+from typing import Any
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -22,14 +22,14 @@ class DiagnosisSubmitResponse(BaseModel):
 
 class DiagnosisStatusResponse(BaseModel):
     id: UUID
-    plot_id: Optional[UUID] = None
+    plot_id: UUID | None = None
     user_id: UUID
     processing_status: str
-    diagnosis_label: Optional[str] = None
-    confidence_score: Optional[Decimal] = None
-    full_diagnosis_result: Optional[List[DiagnosisClassResult]] = None
-    treatment_recommendations: Optional[Dict[str, Any]] = None
+    diagnosis_label: str | None = None
+    confidence_score: Decimal | None = None
+    full_diagnosis_result: list[DiagnosisClassResult] | None = None
+    treatment_recommendations: dict[str, Any] | None = None
     created_at: datetime
-    completed_at: Optional[datetime] = None
+    completed_at: datetime | None = None
 
     model_config = ConfigDict(from_attributes=True)

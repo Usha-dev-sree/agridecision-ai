@@ -5,7 +5,6 @@ Handles business logic for retrieving and updating users.
 from uuid import UUID
 
 from backend.common.exceptions import NotFoundException
-from backend.services.user_service.src.models.user import User
 from backend.services.user_service.src.repositories.user_repository import UserRepository
 from backend.services.user_service.src.schemas.user import UserDetailResponse, UserUpdate
 

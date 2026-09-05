@@ -2,9 +2,8 @@
 User Service - Subscription Schemas
 Pydantic DTOs for subscriptions and payment webhooks.
 """
-from datetime import date, datetime
+from datetime import date
 from decimal import Decimal
-from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
@@ -19,8 +18,8 @@ class SubscriptionStatusResponse(BaseModel):
     has_market_access: bool
     has_voice_advisory: bool
     has_api_access: bool
-    billing_period_start: Optional[date] = None
-    billing_period_end: Optional[date] = None
+    billing_period_start: date | None = None
+    billing_period_end: date | None = None
     auto_renew: bool
     
     model_config = ConfigDict(from_attributes=True)

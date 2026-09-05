@@ -3,15 +3,18 @@ Advisory Service - Irrigation Service (Business Logic)
 Fetches weather data, runs Penman-Monteith, and persists schedule records.
 """
 from datetime import date
-from typing import List, Optional
 from uuid import UUID
 
 from backend.common.logging import get_logger
 from backend.services.advisory_service.src.clients.farm_client import FarmServiceClient
 from backend.services.advisory_service.src.clients.weather_client import WeatherClient
-from backend.services.advisory_service.src.engines.irrigation_engine import calculate_irrigation_schedule
+from backend.services.advisory_service.src.engines.irrigation_engine import (
+    calculate_irrigation_schedule,
+)
 from backend.services.advisory_service.src.models.irrigation_schedule import IrrigationSchedule
-from backend.services.advisory_service.src.repositories.irrigation_repository import IrrigationRepository
+from backend.services.advisory_service.src.repositories.irrigation_repository import (
+    IrrigationRepository,
+)
 from backend.services.advisory_service.src.schemas.irrigation import (
     DailyIrrigationEntry,
     IrrigationRequest,
@@ -33,7 +36,7 @@ class IrrigationService:
         self.weather_client = weather_client
 
     async def generate_schedule(
-        self, user_id: UUID, request: IrrigationRequest, access_token: str, crop_name: Optional[str] = None
+        self, user_id: UUID, request: IrrigationRequest, access_token: str, crop_name: str | None = None
     ) -> IrrigationScheduleResponse:
         """Fetch weather forecast, run irrigation engine, persist results."""
         plot_id = request.plot_id
@@ -103,6 +106,6 @@ class IrrigationService:
         )
 
     async def get_schedule(
-        self, plot_id: UUID, user_id: UUID, from_date: Optional[date] = None
-    ) -> List[IrrigationSchedule]:
+        self, plot_id: UUID, user_id: UUID, from_date: date | None = None
+    ) -> list[IrrigationSchedule]:
         return await self.repo.list_by_plot(plot_id, from_date)

@@ -2,10 +2,8 @@
 Farm Service - Boundaries & Satellite Router
 Endpoints for uploading boundaries, Sentinel-2 parcel detection, NDVI raster calculation, and parcel split/merge.
 """
-from typing import List, Dict, Any
+from typing import Any
 from uuid import UUID
-from fastapi import APIRouter, Depends, Query, status
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.services.farm_service.src.dependencies import get_current_user, get_db
 from backend.services.farm_service.src.repositories.plot_repository import PlotRepository
@@ -13,6 +11,8 @@ from backend.services.farm_service.src.schemas.plots import BoundaryResponse, Ge
 from backend.services.farm_service.src.services.boundary_service import BoundaryService
 from backend.services.farm_service.src.services.parcel_service import ParcelService
 from backend.services.farm_service.src.services.satellite_service import SatelliteService
+from fastapi import APIRouter, Depends, Query, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/v1/plots", tags=["Boundaries & Satellite"])
 
@@ -58,7 +58,7 @@ async def detect_field_boundaries(
 @router.post("/{plot_id}/split", status_code=status.HTTP_200_OK)
 async def split_parcel(
     plot_id: UUID,
-    cut_line: List[List[float]],
+    cut_line: list[list[float]],
     current_user: dict = Depends(get_current_user),
     boundary_service: BoundaryService = Depends(get_boundary_service)
 ):
@@ -71,7 +71,7 @@ async def split_parcel(
 
 @router.post("/merge", status_code=status.HTTP_200_OK)
 async def merge_parcels(
-    geometries: List[Dict[str, Any]],
+    geometries: list[dict[str, Any]],
     current_user: dict = Depends(get_current_user)
 ):
     """Merge adjacent polygon GeoJSONs into a unified plot parcel."""

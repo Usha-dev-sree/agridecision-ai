@@ -4,45 +4,44 @@ Pydantic DTOs for user profile operations.
 """
 from datetime import datetime
 from decimal import Decimal
-from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, EmailStr
 
 
 class UserProfileBase(BaseModel):
-    avatar_url: Optional[str] = None
-    bio: Optional[str] = None
-    land_holding_ha: Optional[Decimal] = None
-    years_of_farming: Optional[int] = None
-    education_level: Optional[str] = None
+    avatar_url: str | None = None
+    bio: str | None = None
+    land_holding_ha: Decimal | None = None
+    years_of_farming: int | None = None
+    education_level: str | None = None
 
 
 class UserBase(BaseModel):
     full_name: str
-    email: Optional[EmailStr] = None
+    email: EmailStr | None = None
     preferred_language: str = "en"
     state_code: str
-    district_name: Optional[str] = None
-    farmer_type: Optional[str] = None
+    district_name: str | None = None
+    farmer_type: str | None = None
 
 
 class UserUpdate(BaseModel):
-    full_name: Optional[str] = None
-    email: Optional[EmailStr] = None
-    preferred_language: Optional[str] = None
-    state_code: Optional[str] = None
-    district_name: Optional[str] = None
-    farmer_type: Optional[str] = None
-    profile: Optional[UserProfileBase] = None
+    full_name: str | None = None
+    email: EmailStr | None = None
+    preferred_language: str | None = None
+    state_code: str | None = None
+    district_name: str | None = None
+    farmer_type: str | None = None
+    profile: UserProfileBase | None = None
 
 
 class UserProfileResponse(UserProfileBase):
     id: UUID
     user_id: UUID
-    agronomist_reg_no: Optional[str] = None
-    agronomist_state: Optional[str] = None
-    agronomist_verified_at: Optional[datetime] = None
+    agronomist_reg_no: str | None = None
+    agronomist_state: str | None = None
+    agronomist_verified_at: datetime | None = None
     created_at: datetime
     updated_at: datetime
 
@@ -57,9 +56,9 @@ class UserDetailResponse(UserBase):
     has_verified_phone: bool
     has_verified_email: bool = False
     has_verified_agronomist_credential: bool
-    referral_code: Optional[str] = None
+    referral_code: str | None = None
     created_at: datetime
     updated_at: datetime
-    profile: Optional[UserProfileResponse] = None
+    profile: UserProfileResponse | None = None
 
     model_config = ConfigDict(from_attributes=True)

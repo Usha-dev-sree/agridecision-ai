@@ -8,7 +8,9 @@ from backend.common.exceptions import NotFoundException
 from backend.common.logging import get_logger
 from backend.services.advisory_service.src.events.producer import publish_diagnosis_event
 from backend.services.advisory_service.src.models.image_diagnosis import ImageDiagnosis
-from backend.services.advisory_service.src.repositories.diagnosis_repository import DiagnosisRepository
+from backend.services.advisory_service.src.repositories.diagnosis_repository import (
+    DiagnosisRepository,
+)
 from backend.services.advisory_service.src.schemas.diagnosis import (
     DiagnosisStatusResponse,
     DiagnosisSubmitResponse,

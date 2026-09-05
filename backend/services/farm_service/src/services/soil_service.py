@@ -2,7 +2,6 @@
 Farm Service - Soil Service (Business Logic)
 Handles CRUD logic and business rules for soil profiles.
 """
-from typing import Optional
 from uuid import UUID
 
 from backend.common.exceptions import NotFoundException

@@ -1,21 +1,23 @@
 """
 Advisory Service - Recommendations Router
 """
-from typing import List
 from uuid import UUID
-
-from fastapi import APIRouter, Depends, Request, status
-from redis.asyncio import Redis
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.services.advisory_service.src.clients.farm_client import FarmServiceClient
 from backend.services.advisory_service.src.dependencies import get_current_user, get_db, get_redis
-from backend.services.advisory_service.src.repositories.recommendation_repository import RecommendationRepository
+from backend.services.advisory_service.src.repositories.recommendation_repository import (
+    RecommendationRepository,
+)
 from backend.services.advisory_service.src.schemas.recommendation import (
     CropRecommendationRequest,
     CropRecommendationResponse,
 )
-from backend.services.advisory_service.src.services.recommendation_service import RecommendationService
+from backend.services.advisory_service.src.services.recommendation_service import (
+    RecommendationService,
+)
+from fastapi import APIRouter, Depends, Request, status
+from redis.asyncio import Redis
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/v1/advisory/recommendations", tags=["Crop Recommendations"])
 
@@ -45,7 +47,7 @@ async def generate_crop_recommendation(
     return await service.generate_recommendation(user_id, data, access_token)
 
 
-@router.get("/plots/{plot_id}/history", response_model=List[CropRecommendationResponse])
+@router.get("/plots/{plot_id}/history", response_model=list[CropRecommendationResponse])
 async def get_recommendation_history(
     plot_id: UUID,
     current_user: dict = Depends(get_current_user),

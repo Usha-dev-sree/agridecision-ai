@@ -2,21 +2,19 @@
 Farm Service - Device Repository
 Handles database operations for farm.iot_device.
 """
-from typing import List, Optional
 from uuid import UUID
-
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.services.farm_service.src.models.iot_device import IoTDevice
 from backend.services.farm_service.src.schemas.devices import DeviceRegistration, DeviceUpdate
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class DeviceRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def list_by_plot(self, plot_id: UUID) -> List[IoTDevice]:
+    async def list_by_plot(self, plot_id: UUID) -> list[IoTDevice]:
         stmt = select(IoTDevice).where(
             IoTDevice.plot_id == plot_id,
             IoTDevice.is_active == True
@@ -24,12 +22,12 @@ class DeviceRepository:
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
 
-    async def get_by_id(self, device_id: UUID) -> Optional[IoTDevice]:
+    async def get_by_id(self, device_id: UUID) -> IoTDevice | None:
         stmt = select(IoTDevice).where(IoTDevice.id == device_id)
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
         
-    async def get_by_uid(self, device_uid: str) -> Optional[IoTDevice]:
+    async def get_by_uid(self, device_uid: str) -> IoTDevice | None:
         stmt = select(IoTDevice).where(IoTDevice.device_uid == device_uid)
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()

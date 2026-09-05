@@ -3,7 +3,7 @@ Federated Learning - Edge Client Node
 Executes local model training on edge nodes (e.g. mobile devices/edge nodes at regional FPOs),
 computes local parameter gradients, and serializes updates for central FedAvg server aggregation.
 """
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 from backend.common.logging import get_logger
 

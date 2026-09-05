@@ -1,7 +1,6 @@
 """
 Enterprise Service - FastAPI Router
 """
-from typing import List
 
 from fastapi import APIRouter, Depends, status
 from redis.asyncio import Redis
@@ -19,7 +18,7 @@ from backend.services.enterprise_service.src.services.enterprise_service import 
 router = APIRouter(prefix="/v1/enterprise", tags=["Enterprise B2B"])
 
 
-@router.get("/organizations", response_model=List[OrganizationItem])
+@router.get("/organizations", response_model=list[OrganizationItem])
 async def get_organizations(
     db: AsyncSession = Depends(get_db),
     redis: Redis = Depends(get_redis),
@@ -42,7 +41,7 @@ async def create_organization(
     return await service.create_organization(req)
 
 
-@router.get("/organizations/{org_id}/contracts", response_model=List[ContractItem])
+@router.get("/organizations/{org_id}/contracts", response_model=list[ContractItem])
 async def get_organization_contracts(
     org_id: str,
     db: AsyncSession = Depends(get_db),

@@ -1,12 +1,9 @@
-from typing import Optional
-from fastapi import APIRouter, Depends, Form, Query, Request, status
-from fastapi.responses import HTMLResponse
-from redis.asyncio import Redis
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.services.user_service.src.dependencies import get_db, get_redis
 from backend.services.user_service.src.repositories.session_repository import SessionRepository
-from backend.services.user_service.src.repositories.subscription_repository import SubscriptionRepository
+from backend.services.user_service.src.repositories.subscription_repository import (
+    SubscriptionRepository,
+)
 from backend.services.user_service.src.repositories.user_repository import UserRepository
 from backend.services.user_service.src.schemas.auth import (
     ForgotPasswordRequest,
@@ -21,6 +18,10 @@ from backend.services.user_service.src.schemas.auth import (
     VerifyResetTokenRequest,
 )
 from backend.services.user_service.src.services.auth_service import AuthService
+from fastapi import APIRouter, Depends, Form, Query, Request, status
+from fastapi.responses import HTMLResponse
+from redis.asyncio import Redis
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/v1/auth", tags=["Authentication"])
 
@@ -48,9 +49,9 @@ async def register_user(
 @router.post("/login", response_model=TokenResponse, status_code=status.HTTP_200_OK)
 async def login_with_password(
     request: Request,
-    login_data: Optional[LoginPasswordRequest] = None,
-    username: Optional[str] = Form(None),
-    password: Optional[str] = Form(None),
+    login_data: LoginPasswordRequest | None = None,
+    username: str | None = Form(None),
+    password: str | None = Form(None),
     auth_service: AuthService = Depends(get_auth_service)
 ):
     """Authenticate user via phone or email and password (supports JSON and Form input)."""
@@ -131,8 +132,8 @@ async def request_email_verification(
 @router.get("/verify-email", status_code=status.HTTP_200_OK)
 @router.post("/verify-email", status_code=status.HTTP_200_OK)
 async def verify_email(
-    token: Optional[str] = Query(None),
-    req: Optional[VerifyEmailRequest] = None,
+    token: str | None = Query(None),
+    req: VerifyEmailRequest | None = None,
     auth_service: AuthService = Depends(get_auth_service)
 ):
     """Verify user's email address."""
@@ -145,7 +146,7 @@ async def verify_email(
 
 # UI HTML Endpoints
 @router.get("/ui/verify-email.html", response_class=HTMLResponse)
-async def verify_email_ui(token: Optional[str] = Query(None)):
+async def verify_email_ui(token: str | None = Query(None)):
     """Serves interactive HTML UI for email verification."""
     html_content = f"""<!DOCTYPE html>
 <html lang="en">
@@ -263,7 +264,7 @@ async def verify_email_ui(token: Optional[str] = Query(None)):
 
 
 @router.get("/ui/reset-password.html", response_class=HTMLResponse)
-async def reset_password_ui(token: Optional[str] = Query(None)):
+async def reset_password_ui(token: str | None = Query(None)):
     """Serves interactive HTML UI for password reset."""
     html_content = f"""<!DOCTYPE html>
 <html lang="en">

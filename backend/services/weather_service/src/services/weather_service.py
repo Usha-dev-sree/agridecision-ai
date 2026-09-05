@@ -3,8 +3,7 @@ Weather Service - Core Business Logic Service
 """
 import json
 import math
-from datetime import datetime, timedelta, timezone
-from typing import List, Optional
+from datetime import UTC, datetime, timedelta
 
 import httpx
 from redis.asyncio import Redis
@@ -29,14 +28,14 @@ class WeatherService:
         """Fetch current weather data with Redis caching."""
         cache_key = f"weather:current:{round(lat, 2)}:{round(lon, 2)}"
         cached_data = await self.redis.get(cache_key)
-        
+
         if cached_data:
             logger.info("Serving current weather from Redis cache", extra={"lat": lat, "lon": lon})
             return WeatherCurrentResponse(**json.loads(cached_data))
 
         # Perform HTTP call to OpenWeatherMap or synthetic fallback
         weather = await self._fetch_live_or_synthetic_current(lat, lon)
-        
+
         # Cache result in Redis
         await self.redis.setex(
             cache_key,
@@ -55,7 +54,7 @@ class WeatherService:
             return WeatherForecastResponse(**json.loads(cached_data))
 
         forecast = await self._fetch_live_or_synthetic_forecast(lat, lon)
-        
+
         await self.redis.setex(
             cache_key,
             settings.FORECAST_CACHE_TTL,
@@ -63,9 +62,9 @@ class WeatherService:
         )
         return forecast
 
-    async def get_active_alerts(self, lat: float, lon: float) -> List[WeatherAlertResponse]:
+    async def get_active_alerts(self, lat: float, lon: float) -> list[WeatherAlertResponse]:
         """Fetch active extreme weather alerts for geographical area."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         return [
             WeatherAlertResponse(
                 alert_id="ALERT-W-001",
@@ -92,10 +91,10 @@ class WeatherService:
                     humidity = data["main"]["humidity"]
                     wind = data["wind"]["speed"] * 3.6  # m/s to km/h
                     rain = data.get("rain", {}).get("1h", 0.0)
-                    
+
                     # FAO Penman-Monteith ET0 estimation
                     et0 = self._calculate_reference_et0(temp, humidity, wind)
-                    
+
                     return WeatherCurrentResponse(
                         latitude=lat,
                         longitude=lon,
@@ -106,18 +105,18 @@ class WeatherService:
                         solar_radiation_mj=18.5,
                         evapotranspiration_mm=et0,
                         condition=data["weather"][0]["main"],
-                        observed_at=datetime.now(timezone.utc)
+                        observed_at=datetime.now(UTC)
                     )
         except Exception as e:
             logger.warning("OpenWeather API call failed/unreachable. Using agro-met synthetic estimation.", extra={"error": str(e)})
 
         # Synthetic fallback
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         temp = 28.5
         humidity = 68.0
         wind = 12.0
         et0 = self._calculate_reference_et0(temp, humidity, wind)
-        
+
         return WeatherCurrentResponse(
             latitude=lat,
             longitude=lon,
@@ -132,8 +131,8 @@ class WeatherService:
         )
 
     async def _fetch_live_or_synthetic_forecast(self, lat: float, lon: float) -> WeatherForecastResponse:
-        now = datetime.now(timezone.utc)
-        items: List[DailyForecastItem] = []
+        now = datetime.now(UTC)
+        items: list[DailyForecastItem] = []
 
         # 1. Try fetching live 7-day forecast from Open-Meteo (free real-time global weather API)
         try:

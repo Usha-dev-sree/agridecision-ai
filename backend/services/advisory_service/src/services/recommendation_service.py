@@ -3,15 +3,14 @@ Advisory Service - Recommendation Service (Business Logic)
 Orchestrates plot data fetching, feature assembly, engine invocation, and persistence.
 """
 import json
-from typing import List, Optional
 from uuid import UUID
-import numpy as np
-from redis.asyncio import Redis
 
-from backend.common.exceptions import NotFoundException
+import numpy as np
+from ai_services.inference_gateway.triton_client import TritonInferenceClient
 from backend.common.logging import get_logger
 from backend.services.advisory_service.src.clients.farm_client import FarmServiceClient
 from backend.services.advisory_service.src.clients.weather_client import WeatherClient
+from backend.services.advisory_service.src.config import settings
 from backend.services.advisory_service.src.engines.recommendation_engine import (
     apply_rule_based_recommendations,
     build_feature_vector,
@@ -25,8 +24,7 @@ from backend.services.advisory_service.src.schemas.recommendation import (
     CropRecommendationResponse,
     RecommendedCrop,
 )
-from backend.services.advisory_service.src.config import settings
-from ai_services.inference_gateway.triton_client import TritonInferenceClient
+from redis.asyncio import Redis
 
 logger = get_logger(__name__)
 
@@ -194,7 +192,7 @@ class RecommendationService:
 
         return response
 
-    async def get_history(self, plot_id: UUID, user_id: UUID) -> List[CropRecommendationResponse]:
+    async def get_history(self, plot_id: UUID, user_id: UUID) -> list[CropRecommendationResponse]:
         records = await self.repo.list_by_plot(plot_id)
         return [
             CropRecommendationResponse(

@@ -2,7 +2,6 @@
 Farm Service - Season Service (Business Logic)
 Handles CRUD logic and business rules for crop seasons and history.
 """
-from typing import List
 from uuid import UUID
 
 from backend.common.exceptions import NotFoundException
@@ -21,7 +20,7 @@ class SeasonService:
         self.season_repo = season_repo
         self.plot_repo = plot_repo
 
-    async def list_seasons(self, plot_id: UUID, owner_id: UUID) -> List[CropSeasonResponse]:
+    async def list_seasons(self, plot_id: UUID, owner_id: UUID) -> list[CropSeasonResponse]:
         plot = await self.plot_repo.get_by_id(plot_id)
         if not plot or plot.owner_id != owner_id or not plot.is_active:
             raise NotFoundException(detail="Plot not found")
@@ -71,7 +70,7 @@ class SeasonService:
 
         await self.season_repo.delete_season(season)
 
-    async def list_history(self, plot_id: UUID, owner_id: UUID) -> List[CropHistoryResponse]:
+    async def list_history(self, plot_id: UUID, owner_id: UUID) -> list[CropHistoryResponse]:
         plot = await self.plot_repo.get_by_id(plot_id)
         if not plot or plot.owner_id != owner_id or not plot.is_active:
             raise NotFoundException(detail="Plot not found")

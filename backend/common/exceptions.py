@@ -2,7 +2,7 @@
 AgriDecision AI - Common Exception Handlers
 Implements RFC 7807 Problem Details for HTTP APIs.
 """
-from typing import Any, Dict, Optional
+from typing import Any
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
@@ -16,8 +16,8 @@ class APIException(Exception):
         type_uri: str,
         title: str,
         detail: str,
-        instance: Optional[str] = None,
-        extensions: Optional[Dict[str, Any]] = None,
+        instance: str | None = None,
+        extensions: dict[str, Any] | None = None,
     ):
         self.status_code = status_code
         self.type_uri = type_uri
@@ -27,7 +27,7 @@ class APIException(Exception):
         self.extensions = extensions or {}
         super().__init__(detail)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to RFC 7807 dictionary."""
         response = {
             "type": self.type_uri,
@@ -44,7 +44,7 @@ class APIException(Exception):
 
 class NotFoundException(APIException):
     """Resource not found exception (404)."""
-    def __init__(self, detail: str, instance: Optional[str] = None):
+    def __init__(self, detail: str, instance: str | None = None):
         super().__init__(
             status_code=404,
             type_uri="https://api.agridecision.com/errors/not-found",
@@ -56,7 +56,7 @@ class NotFoundException(APIException):
 
 class ValidationException(APIException):
     """Validation exception (422)."""
-    def __init__(self, detail: str, errors: list, instance: Optional[str] = None):
+    def __init__(self, detail: str, errors: list, instance: str | None = None):
         super().__init__(
             status_code=422,
             type_uri="https://api.agridecision.com/errors/validation-error",
@@ -69,7 +69,7 @@ class ValidationException(APIException):
 
 class UnauthorizedException(APIException):
     """Unauthorized exception (401)."""
-    def __init__(self, detail: str, instance: Optional[str] = None):
+    def __init__(self, detail: str, instance: str | None = None):
         super().__init__(
             status_code=401,
             type_uri="https://api.agridecision.com/errors/unauthorized",
@@ -81,7 +81,7 @@ class UnauthorizedException(APIException):
 
 class ForbiddenException(APIException):
     """Forbidden exception (403)."""
-    def __init__(self, detail: str, instance: Optional[str] = None):
+    def __init__(self, detail: str, instance: str | None = None):
         super().__init__(
             status_code=403,
             type_uri="https://api.agridecision.com/errors/forbidden",
@@ -93,7 +93,7 @@ class ForbiddenException(APIException):
 
 class ConflictException(APIException):
     """Conflict exception (409)."""
-    def __init__(self, detail: str, instance: Optional[str] = None):
+    def __init__(self, detail: str, instance: str | None = None):
         super().__init__(
             status_code=409,
             type_uri="https://api.agridecision.com/errors/conflict",

@@ -6,8 +6,9 @@ Provides AES-256-GCM field-level encryption for sensitive PII data
 """
 import base64
 import os
-from typing import Tuple
+
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+
 from backend.common.exceptions import APIException
 
 

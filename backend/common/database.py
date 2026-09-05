@@ -8,7 +8,7 @@ Provides high-throughput async SQLAlchemy engine management with:
   - Statement caching for asyncpg driver
 """
 import contextlib
-from typing import AsyncIterator
+from collections.abc import AsyncIterator
 
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
@@ -24,7 +24,7 @@ Base = declarative_base()
 
 class DatabaseManager:
     """Manages database connections and sessions with production performance tuning."""
-    
+
     def __init__(self, database_url: str):
         self._engine: AsyncEngine | None = None
         self._sessionmaker: async_sessionmaker[AsyncSession] | None = None

@@ -4,14 +4,13 @@ Endpoints for soil profile management.
 """
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, status
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from backend.services.farm_service.src.dependencies import get_current_user, get_db
 from backend.services.farm_service.src.repositories.plot_repository import PlotRepository
 from backend.services.farm_service.src.repositories.soil_repository import SoilRepository
 from backend.services.farm_service.src.schemas.soil import SoilProfileResponse, SoilProfileUpdate
 from backend.services.farm_service.src.services.soil_service import SoilService
+from fastapi import APIRouter, Depends, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/v1/plots/{plot_id}/soil", tags=["Soil"])
 

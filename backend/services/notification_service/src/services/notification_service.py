@@ -4,8 +4,7 @@ Provides production-ready notification CRUD backed by PostgreSQL, with Redis cac
 """
 import json
 import uuid
-from datetime import datetime, timezone
-from typing import Optional
+from datetime import UTC, datetime
 from uuid import UUID
 
 from redis.asyncio import Redis
@@ -29,7 +28,7 @@ CACHE_TTL = 300  # 5 minutes
 class NotificationService:
     """Notification dispatch and inbox management backed by PostgreSQL + Redis cache."""
 
-    def __init__(self, db: AsyncSession, redis: Optional[Redis] = None):
+    def __init__(self, db: AsyncSession, redis: Redis | None = None):
         self._db = db
         self._redis = redis
 
@@ -38,7 +37,7 @@ class NotificationService:
     async def send_notification(self, req: SendNotificationRequest) -> NotificationItem:
         """Persist and dispatch a notification alert."""
         notification_id = uuid.uuid4()
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
 
         await self._db.execute(
             text("""
@@ -84,7 +83,7 @@ class NotificationService:
     # ── Inbox Query ────────────────────────────────────────────────────────────
 
     async def get_user_notifications(
-        self, user_id: UUID, channel: Optional[str], limit: int, offset: int
+        self, user_id: UUID, channel: str | None, limit: int, offset: int
     ) -> NotificationListResponse:
         """Retrieve paginated notification inbox for a user, Redis-cached."""
         cache_key = f"{CACHE_PREFIX}:{user_id}:{channel}:{limit}:{offset}"

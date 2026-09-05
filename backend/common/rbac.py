@@ -5,7 +5,7 @@ Provides fine-grained Role-Based Access Control (RBAC) and
 Attribute-Based Access Control (ABAC) evaluation functions.
 """
 from enum import Enum
-from typing import Any, Dict, List, Optional
+
 from backend.common.exceptions import ForbiddenException
 
 
@@ -17,7 +17,7 @@ class Role(str, Enum):
 
 
 # RBAC Role -> Allowed Actions Matrix
-ROLE_PERMISSIONS: Dict[Role, List[str]] = {
+ROLE_PERMISSIONS: dict[Role, list[str]] = {
     Role.FARMER: [
         "plot:read", "plot:create", "plot:update",
         "soil:read", "soil:update",
@@ -66,8 +66,8 @@ def verify_abac_ownership(
     user_id: str,
     user_role: str,
     resource_owner_id: str,
-    resource_tenant_id: Optional[str] = None,
-    user_tenant_ids: Optional[List[str]] = None,
+    resource_tenant_id: str | None = None,
+    user_tenant_ids: list[str] | None = None,
 ) -> bool:
     """
     Evaluates Attribute-Based Access Control (ABAC) rules:

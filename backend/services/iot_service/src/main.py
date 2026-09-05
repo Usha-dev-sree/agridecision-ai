@@ -3,10 +3,10 @@ IoT Telemetry Service - Main Entrypoint
 FastAPI microservice managing IoT device telemetry, sensor data ingestion, and MQTT/Kafka streams.
 """
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, APIRouter, Depends, status
-from pydantic import BaseModel
-from typing import List, Optional
 from datetime import datetime
+
+from fastapi import APIRouter, FastAPI, status
+from pydantic import BaseModel
 
 from backend.common.logging import get_logger, setup_logging
 from backend.common.metrics import instrument_app
@@ -20,7 +20,7 @@ class TelemetryReading(BaseModel):
     sensor_type: str
     value: float
     unit: str
-    timestamp: Optional[datetime] = None
+    timestamp: datetime | None = None
 
 
 @asynccontextmanager

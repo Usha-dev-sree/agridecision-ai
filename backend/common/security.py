@@ -12,8 +12,8 @@ Security hardening applied:
 import hashlib
 import hmac
 import secrets
-from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime, timedelta
+from typing import Any
 
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -78,7 +78,7 @@ def create_access_token(
     data: dict,
     secret_key: str,
     algorithm: str = "HS256",
-    expires_delta: Optional[timedelta] = None,
+    expires_delta: timedelta | None = None,
     audience: str = JWT_AUDIENCE,
     issuer: str = JWT_ISSUER,
 ) -> str:
@@ -92,10 +92,10 @@ def create_access_token(
       - Token type claim "access" prevents refresh tokens being used as access tokens
     """
     to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=15))
+    expire = datetime.now(UTC) + (expires_delta or timedelta(minutes=15))
     to_encode.update({
         "exp": expire,
-        "iat": datetime.now(timezone.utc),
+        "iat": datetime.now(UTC),
         "iss": issuer,
         "aud": audience,
         "type": "access",
@@ -107,7 +107,7 @@ def create_refresh_token(
     data: dict,
     secret_key: str,
     algorithm: str = "HS256",
-    expires_delta: Optional[timedelta] = None,
+    expires_delta: timedelta | None = None,
     audience: str = JWT_AUDIENCE,
     issuer: str = JWT_ISSUER,
 ) -> str:
@@ -120,11 +120,11 @@ def create_refresh_token(
       - Expires in 30 days by default
     """
     to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(days=30))
+    expire = datetime.now(UTC) + (expires_delta or timedelta(days=30))
     to_encode.update({
         "jti": secrets.token_hex(16),
         "exp": expire,
-        "iat": datetime.now(timezone.utc),
+        "iat": datetime.now(UTC),
         "iss": issuer,
         "aud": audience,
         "type": "refresh",
@@ -138,7 +138,7 @@ def decode_token(
     algorithm: str = "HS256",
     audience: str = JWT_AUDIENCE,
     issuer: str = JWT_ISSUER,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Decode and validate a JWT token.
 

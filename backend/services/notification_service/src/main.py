@@ -18,7 +18,11 @@ from backend.common.middleware.security_middleware import (
     SecurityHeadersMiddleware,
 )
 from backend.services.notification_service.src.config import settings
-from backend.services.notification_service.src.dependencies import db_manager, kafka_manager, redis_client
+from backend.services.notification_service.src.dependencies import (
+    db_manager,
+    kafka_manager,
+    redis_client,
+)
 from backend.services.notification_service.src.events.consumer import start_event_consumer
 from backend.services.notification_service.src.routers import notification
 

@@ -2,7 +2,6 @@
 Farm Service - Plot Service (Business Logic)
 Handles CRUD logic and business rules for farm plots.
 """
-from typing import List
 from uuid import UUID
 
 from backend.common.exceptions import NotFoundException
@@ -24,7 +23,7 @@ class PlotService:
             raise NotFoundException(detail="Plot not found")
         return PlotDetail.model_validate(plot)
 
-    async def list_plots(self, owner_id: UUID) -> List[PlotDetail]:
+    async def list_plots(self, owner_id: UUID) -> list[PlotDetail]:
         plots = await self.plot_repo.list_by_owner(owner_id)
         return [PlotDetail.model_validate(p) for p in plots]
 

@@ -3,7 +3,7 @@ Analytics Service - Core Analytics Aggregation Service
 Provides farm-level and regional analytics with PostgreSQL queries and Redis caching.
 """
 import json
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from redis.asyncio import Redis
 from sqlalchemy import text
@@ -23,7 +23,7 @@ CACHE_TTL = 600  # 10 minutes
 class AnalyticsService:
     """Analytics aggregation engine backed by PostgreSQL + Redis cache."""
 
-    def __init__(self, db: AsyncSession, redis: Optional[Redis] = None):
+    def __init__(self, db: AsyncSession, redis: Redis | None = None):
         self._db = db
         self._redis = redis
 
@@ -89,7 +89,7 @@ class AnalyticsService:
             """),
             {"plot_id": plot_id},
         )
-        yield_history: List[Dict[str, Any]] = [
+        yield_history: list[dict[str, Any]] = [
             {"year": row.harvest_year, "yield_kg_ha": float(row.yield_kg_per_hectare)}
             for row in yield_result.fetchall()
         ]
@@ -153,7 +153,7 @@ class AnalyticsService:
             """),
             {"region": region_name},
         )
-        top_crops: List[Dict[str, Any]] = [
+        top_crops: list[dict[str, Any]] = [
             {"crop": row.crop_name, "percentage": float(row.pct)}
             for row in crops_result.fetchall()
         ]

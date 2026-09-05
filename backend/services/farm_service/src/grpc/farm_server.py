@@ -2,14 +2,11 @@
 Farm Service - gRPC Server
 Exposes high-performance internal endpoints for cross-service communication.
 """
-import asyncio
-from concurrent import futures
 from typing import Any
 
 # In a real implementation, this would import from compiled protobuf files
 # import grpc
 # from backend.services.farm_service.src.grpc import farm_pb2, farm_pb2_grpc
-
 from backend.common.logging import get_logger
 
 logger = get_logger(__name__)
@@ -36,4 +33,3 @@ async def serve_grpc(db_manager: Any, port: int = 50051) -> None:
     # await server.start()
     # logger.info(f"gRPC server started on port {port}")
     # await server.wait_for_termination()
-    pass

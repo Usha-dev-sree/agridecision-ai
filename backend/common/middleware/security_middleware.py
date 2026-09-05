@@ -6,9 +6,8 @@ Provides:
   - RequestSizeLimitMiddleware: rejects bodies exceeding the configured limit (DoS prevention)
   - CorrelationIdMiddleware: propagates X-Request-ID for distributed tracing
 """
-import time
 import uuid
-from typing import Callable
+from collections.abc import Callable
 
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
@@ -118,7 +117,7 @@ class RequestSizeLimitMiddleware(BaseHTTPMiddleware):
             return Response(
                 content='{"type":"https://api.agridecision.com/errors/payload-too-large",'
                         '"title":"Payload Too Large",'
-                        f'"status":413,'
+                        '"status":413,'
                         '"detail":"Request body exceeds the maximum allowed size."}',
                 status_code=413,
                 media_type="application/problem+json",

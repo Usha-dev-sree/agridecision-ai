@@ -2,7 +2,6 @@
 Advisory Service - Irrigation Engine Unit Tests
 Tests FAO-56 Penman-Monteith formula and Kc lookups.
 """
-import pytest
 from backend.services.advisory_service.src.engines.irrigation_engine import (
     KC_TABLE,
     calculate_irrigation_schedule,

@@ -2,10 +2,11 @@
 Market Service - SQLAlchemy Models
 """
 import uuid
-from datetime import datetime, timezone
-from decimal import Decimal
-from sqlalchemy import Column, String, Numeric, DateTime
+from datetime import UTC, datetime
+
+from sqlalchemy import Column, DateTime, Numeric, String
 from sqlalchemy.dialects.postgresql import UUID
+
 from backend.common.database import Base
 
 
@@ -23,4 +24,4 @@ class MandiPrice(Base):
     min_price_inr = Column(Numeric(10, 2), nullable=False)
     max_price_inr = Column(Numeric(10, 2), nullable=False)
     modal_price_inr = Column(Numeric(10, 2), nullable=False)
-    reported_date = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc), index=True)
+    reported_date = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(UTC), index=True)

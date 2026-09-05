@@ -4,8 +4,7 @@ Provides multi-tenant organization and contract management backed by PostgreSQL.
 """
 import json
 import uuid
-from datetime import datetime, timezone
-from typing import List, Optional
+from datetime import UTC, datetime
 from uuid import UUID
 
 from redis.asyncio import Redis
@@ -31,13 +30,13 @@ CACHE_TTL = 1800  # 30 minutes
 class EnterpriseService:
     """Multi-tenant organization and contract management."""
 
-    def __init__(self, db: AsyncSession, redis: Optional[Redis] = None):
+    def __init__(self, db: AsyncSession, redis: Redis | None = None):
         self._db = db
         self._redis = redis
 
     # ── Organizations ──────────────────────────────────────────────────────────
 
-    async def get_organizations(self) -> List[OrganizationItem]:
+    async def get_organizations(self) -> list[OrganizationItem]:
         """List all enterprise B2B organizations with Redis caching."""
         # Check cache
         if self._redis:
@@ -91,7 +90,7 @@ class EnterpriseService:
             raise ConflictException(detail=f"Organization with tax ID {req.tax_identifier} already exists")
 
         org_id = uuid.uuid4()
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
 
         await self._db.execute(
             text("""
@@ -127,7 +126,7 @@ class EnterpriseService:
 
     # ── Contracts ──────────────────────────────────────────────────────────────
 
-    async def get_contracts(self, org_id: str) -> List[ContractItem]:
+    async def get_contracts(self, org_id: str) -> list[ContractItem]:
         """Get corporate procurement and advisory SLA contracts."""
         cache_key = f"{ORG_CACHE_PREFIX}:{org_id}:contracts"
 

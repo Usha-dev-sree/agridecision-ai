@@ -2,28 +2,26 @@
 Farm Service - Plot Repository
 Handles database operations for farm.farm_plot and farm.plot_boundary.
 """
-from typing import List, Optional
 from uuid import UUID
-
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 
 from backend.services.farm_service.src.models.farm_plot import FarmPlot
 from backend.services.farm_service.src.models.plot_boundary import PlotBoundary
 from backend.services.farm_service.src.schemas.plots import PlotCreate, PlotUpdate
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 
 class PlotRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_by_id(self, plot_id: UUID) -> Optional[FarmPlot]:
+    async def get_by_id(self, plot_id: UUID) -> FarmPlot | None:
         stmt = select(FarmPlot).where(FarmPlot.id == plot_id).options(selectinload(FarmPlot.boundary))
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
-    async def list_by_owner(self, owner_id: UUID) -> List[FarmPlot]:
+    async def list_by_owner(self, owner_id: UUID) -> list[FarmPlot]:
         stmt = select(FarmPlot).where(
             FarmPlot.owner_id == owner_id,
             FarmPlot.is_active == True

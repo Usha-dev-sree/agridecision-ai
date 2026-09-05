@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """
 Farm Service - Plot Boundary Model
 SQLAlchemy model for farm.plot_boundary using GeoAlchemy2 for PostGIS integration.
@@ -5,12 +7,11 @@ SQLAlchemy model for farm.plot_boundary using GeoAlchemy2 for PostGIS integratio
 from datetime import datetime
 from uuid import UUID
 
+from backend.common.database import Base
 from geoalchemy2 import Geometry
 from sqlalchemy import DateTime, ForeignKey, Text, func
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
-from backend.common.database import Base
 
 
 class PlotBoundary(Base):
@@ -28,4 +29,4 @@ class PlotBoundary(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 
-    plot: Mapped["FarmPlot"] = relationship("FarmPlot", back_populates="boundary")
+    plot: Mapped[FarmPlot] = relationship("FarmPlot", back_populates="boundary")  # noqa: F821

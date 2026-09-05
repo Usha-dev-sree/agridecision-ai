@@ -2,40 +2,39 @@
 User Service - Auth Schemas
 Pydantic DTOs for authentication.
 """
-from typing import Optional
 
-from pydantic import BaseModel, EmailStr, Field, constr
+from pydantic import BaseModel, EmailStr, Field
 
 
 class OTPRequest(BaseModel):
-    phone_number: constr(pattern=r"^\+?[1-9]\d{1,14}$") = Field(..., description="E.164 formatted phone number")
+    phone_number: str = Field(..., pattern=r"^\+?[1-9]\d{1,14}$", description="E.164 formatted phone number")
 
 
 class OTPVerify(BaseModel):
-    phone_number: constr(pattern=r"^\+?[1-9]\d{1,14}$")
-    otp_code: constr(min_length=6, max_length=6)
-    device_fingerprint: Optional[str] = None
-    device_platform: Optional[str] = "WEB"
+    phone_number: str = Field(..., pattern=r"^\+?[1-9]\d{1,14}$")
+    otp_code: str = Field(..., min_length=6, max_length=6)
+    device_fingerprint: str | None = None
+    device_platform: str | None = "WEB"
 
 
 class RegisterRequest(BaseModel):
     full_name: str = Field(..., min_length=2, max_length=200)
-    phone_number: constr(pattern=r"^\+?[1-9]\d{1,14}$") = Field(..., description="E.164 formatted phone number")
-    email: Optional[EmailStr] = None
+    phone_number: str = Field(..., pattern=r"^\+?[1-9]\d{1,14}$", description="E.164 formatted phone number")
+    email: EmailStr | None = None
     password: str = Field(..., min_length=6, description="Password min 6 characters")
-    role: Optional[str] = "FARMER"
+    role: str | None = "FARMER"
     state_code: str = Field("IN-MH", min_length=2, max_length=10)
-    district_name: Optional[str] = None
-    farmer_type: Optional[str] = "SMALL_COMMERCIAL"
-    preferred_language: Optional[str] = "en"
+    district_name: str | None = None
+    farmer_type: str | None = "SMALL_COMMERCIAL"
+    preferred_language: str | None = "en"
 
 
 class LoginPasswordRequest(BaseModel):
-    phone_number: Optional[str] = None
-    email: Optional[EmailStr] = None
-    username: Optional[str] = None  # Accepts phone or email
+    phone_number: str | None = None
+    email: EmailStr | None = None
+    username: str | None = None  # Accepts phone or email
     password: str = Field(..., min_length=1)
-    device_fingerprint: Optional[str] = None
+    device_fingerprint: str | None = None
 
 
 class ForgotPasswordRequest(BaseModel):

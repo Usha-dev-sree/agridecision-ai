@@ -2,13 +2,12 @@
 User Service - Dependencies
 Instantiates database and Kafka managers and wires them to common dependencies.
 """
-from fastapi import Request
-from redis.asyncio import Redis
-
 from backend.common.database import DatabaseManager
 from backend.common.dependencies import get_current_user_dependency, get_db_dependency
 from backend.common.kafka import KafkaManager
 from backend.services.user_service.src.config import settings
+from fastapi import Request
+from redis.asyncio import Redis
 
 # Global singletons initialized during application startup
 db_manager = DatabaseManager(settings.DATABASE_URL)

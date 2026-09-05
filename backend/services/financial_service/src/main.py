@@ -17,7 +17,11 @@ from backend.common.middleware.security_middleware import (
     SecurityHeadersMiddleware,
 )
 from backend.services.financial_service.src.config import settings
-from backend.services.financial_service.src.dependencies import db_manager, kafka_manager, redis_client
+from backend.services.financial_service.src.dependencies import (
+    db_manager,
+    kafka_manager,
+    redis_client,
+)
 from backend.services.financial_service.src.routers import financial
 
 setup_logging(settings.APP_NAME, settings.LOG_LEVEL)

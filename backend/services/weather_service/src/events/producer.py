@@ -2,7 +2,7 @@
 Weather Service - Kafka Event Producer
 Publishes weather alert events for consumption by notification-service.
 """
-from typing import Any, Dict
+from typing import Any
 
 from backend.common.kafka import KafkaManager
 from backend.common.logging import get_logger
@@ -21,7 +21,7 @@ async def publish_weather_alert(
     description: str,
 ) -> None:
     """Publish an extreme weather alert event to Kafka for downstream consumers."""
-    event: Dict[str, Any] = {
+    event: dict[str, Any] = {
         "event_type": "WEATHER_ALERT",
         "alert_type": alert_type,
         "severity": severity,

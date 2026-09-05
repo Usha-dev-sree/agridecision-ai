@@ -2,16 +2,14 @@
 Farm Service - Plots Router
 Endpoints for plot management.
 """
-from typing import List
 from uuid import UUID
-
-from fastapi import APIRouter, Depends, status
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.services.farm_service.src.dependencies import get_current_user, get_db
 from backend.services.farm_service.src.repositories.plot_repository import PlotRepository
 from backend.services.farm_service.src.schemas.plots import PlotCreate, PlotDetail, PlotUpdate
 from backend.services.farm_service.src.services.plot_service import PlotService
+from fastapi import APIRouter, Depends, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/v1/plots", tags=["Plots"])
 
@@ -31,7 +29,7 @@ async def create_plot(
     return await plot_service.create_plot(owner_id, data)
 
 
-@router.get("", response_model=List[PlotDetail], status_code=status.HTTP_200_OK)
+@router.get("", response_model=list[PlotDetail], status_code=status.HTTP_200_OK)
 async def list_plots(
     current_user: dict = Depends(get_current_user),
     plot_service: PlotService = Depends(get_plot_service)

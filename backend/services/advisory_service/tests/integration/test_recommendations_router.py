@@ -1,9 +1,10 @@
 """
 Advisory Service - Integration Tests for Recommendations Router
 """
+from unittest.mock import patch
+
 import pytest
 from httpx import ASGITransport, AsyncClient
-from unittest.mock import AsyncMock, MagicMock, patch
 
 
 @pytest.fixture

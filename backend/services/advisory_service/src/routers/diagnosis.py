@@ -3,20 +3,20 @@ Advisory Service - Diagnosis Router
 Handles image upload registration and asynchronous diagnosis polling.
 """
 import os
-from typing import Optional
 from uuid import UUID
-
-from fastapi import APIRouter, Depends, File, Form, Query, UploadFile, status
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.common.logging import get_logger
 from backend.services.advisory_service.src.dependencies import get_current_user, get_db
-from backend.services.advisory_service.src.repositories.diagnosis_repository import DiagnosisRepository
+from backend.services.advisory_service.src.repositories.diagnosis_repository import (
+    DiagnosisRepository,
+)
 from backend.services.advisory_service.src.schemas.diagnosis import (
     DiagnosisStatusResponse,
     DiagnosisSubmitResponse,
 )
 from backend.services.advisory_service.src.services.diagnosis_service import DiagnosisService
+from fastapi import APIRouter, Depends, File, Form, UploadFile, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = get_logger(__name__)
 router = APIRouter(prefix="/v1/advisory/diagnosis", tags=["Disease Diagnosis"])
@@ -29,7 +29,7 @@ def get_diagnosis_service(session: AsyncSession = Depends(get_db)) -> DiagnosisS
 
 @router.post("", response_model=DiagnosisSubmitResponse, status_code=status.HTTP_202_ACCEPTED)
 async def submit_image_for_diagnosis(
-    plot_id: Optional[UUID] = Form(None),
+    plot_id: UUID | None = Form(None),
     file: UploadFile = File(..., description="Plant leaf or crop image (JPEG/PNG)"),
     current_user: dict = Depends(get_current_user),
     service: DiagnosisService = Depends(get_diagnosis_service),

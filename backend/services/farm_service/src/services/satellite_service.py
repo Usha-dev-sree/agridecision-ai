@@ -2,9 +2,10 @@
 Farm Service - Satellite & NDVI Processing Service
 Provides Sentinel-2 satellite parcel extraction and NDVI vegetation index raster calculation.
 """
-import numpy as np
-from typing import Dict, Any, List
+from typing import Any
 from uuid import UUID
+
+import numpy as np
 from backend.common.logging import get_logger
 
 logger = get_logger(__name__)
@@ -21,7 +22,7 @@ class SatelliteService:
         ndvi = (nir_band - red_band) / denominator
         return np.clip(ndvi, -1.0, 1.0)
 
-    async def get_plot_ndvi_telemetry(self, plot_id: UUID) -> Dict[str, Any]:
+    async def get_plot_ndvi_telemetry(self, plot_id: UUID) -> dict[str, Any]:
         """
         Retrieve latest Sentinel-2 L2A satellite pass for farm plot coordinates
         and compute NDVI stats.
@@ -46,7 +47,7 @@ class SatelliteService:
             "sample_raster_slice": np.round(ndvi_matrix[:3, :3], 3).tolist()
         }
 
-    async def detect_field_boundaries(self, latitude: float, longitude: float) -> Dict[str, Any]:
+    async def detect_field_boundaries(self, latitude: float, longitude: float) -> dict[str, Any]:
         """
         Extract field parcel boundary polygon automatically using NIR edge contrast.
         """

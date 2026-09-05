@@ -1,7 +1,6 @@
 """
 Advisory Service - Recommendation Engine Unit Tests
 """
-import pytest
 from backend.services.advisory_service.src.engines.recommendation_engine import (
     SEASON_CROPS,
     apply_rule_based_recommendations,

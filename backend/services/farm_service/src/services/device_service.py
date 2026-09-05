@@ -2,13 +2,16 @@
 Farm Service - Device Service (Business Logic)
 Handles CRUD logic and business rules for IoT devices.
 """
-from typing import List
 from uuid import UUID
 
 from backend.common.exceptions import ConflictException, NotFoundException
 from backend.services.farm_service.src.repositories.device_repository import DeviceRepository
 from backend.services.farm_service.src.repositories.plot_repository import PlotRepository
-from backend.services.farm_service.src.schemas.devices import DeviceRegistration, DeviceResponse, DeviceUpdate
+from backend.services.farm_service.src.schemas.devices import (
+    DeviceRegistration,
+    DeviceResponse,
+    DeviceUpdate,
+)
 
 
 class DeviceService:
@@ -29,7 +32,7 @@ class DeviceService:
         device = await self.device_repo.register_device(plot_id, data)
         return DeviceResponse.model_validate(device)
 
-    async def list_devices(self, plot_id: UUID, owner_id: UUID) -> List[DeviceResponse]:
+    async def list_devices(self, plot_id: UUID, owner_id: UUID) -> list[DeviceResponse]:
         plot = await self.plot_repo.get_by_id(plot_id)
         if not plot or plot.owner_id != owner_id or not plot.is_active:
             raise NotFoundException(detail="Plot not found")

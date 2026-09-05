@@ -1,8 +1,8 @@
 """
 Financial Service - Pydantic Schemas
 """
-from typing import List, Optional
 from uuid import UUID
+
 from pydantic import BaseModel, Field
 
 
@@ -19,7 +19,7 @@ class CreditScoreResponse(BaseModel):
     risk_category: str  # LOW_RISK, MODERATE_RISK, HIGH_RISK
     max_loan_eligible_inr: float
     interest_rate_percent: float
-    key_drivers: List[str]
+    key_drivers: list[str]
 
 
 class LoanApplicationRequest(BaseModel):

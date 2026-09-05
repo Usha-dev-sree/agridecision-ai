@@ -2,20 +2,18 @@
 User Service - Subscription Repository
 Handles database operations for iam.subscription and iam.payment_record.
 """
-from typing import Optional
 from uuid import UUID
 
+from backend.services.user_service.src.models.subscription import Subscription
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from backend.services.user_service.src.models.subscription import Subscription
 
 
 class SubscriptionRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_by_user_id(self, user_id: UUID) -> Optional[Subscription]:
+    async def get_by_user_id(self, user_id: UUID) -> Subscription | None:
         stmt = select(Subscription).where(Subscription.user_id == user_id)
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()

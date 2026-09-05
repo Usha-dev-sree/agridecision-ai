@@ -2,8 +2,8 @@
 Notification Service - Pydantic Schemas
 """
 from datetime import datetime
-from typing import List, Optional
 from uuid import UUID
+
 from pydantic import BaseModel, Field
 
 
@@ -13,7 +13,7 @@ class SendNotificationRequest(BaseModel):
     category: str = Field("DISEASE_ALERT", description="DISEASE_ALERT, WEATHER_WARNING, MARKET_PRICE, ADVISORY")
     title: str
     body: str
-    deep_link: Optional[str] = None
+    deep_link: str | None = None
 
 
 class NotificationItem(BaseModel):
@@ -29,4 +29,4 @@ class NotificationItem(BaseModel):
 
 class NotificationListResponse(BaseModel):
     unread_count: int
-    notifications: List[NotificationItem]
+    notifications: list[NotificationItem]

@@ -6,20 +6,20 @@ Hardened with HMAC-SHA256 OTP hashing, constant-time verification, and timezone-
 import hashlib
 import secrets
 from datetime import datetime, timedelta, timezone
-from typing import Optional
 from uuid import UUID
-
-from fastapi import Request
-from redis.asyncio import Redis
 
 from backend.common.exceptions import ConflictException, UnauthorizedException
 from backend.common.security import create_access_token, create_refresh_token
 from backend.services.user_service.src.config import settings
 from backend.services.user_service.src.repositories.session_repository import SessionRepository
-from backend.services.user_service.src.repositories.subscription_repository import SubscriptionRepository
+from backend.services.user_service.src.repositories.subscription_repository import (
+    SubscriptionRepository,
+)
 from backend.services.user_service.src.repositories.user_repository import UserRepository
 from backend.services.user_service.src.schemas.auth import RegisterRequest, TokenResponse
 from backend.services.user_service.src.schemas.user import UserBase
+from fastapi import Request
+from redis.asyncio import Redis
 
 
 def hash_password(password: str) -> str:
@@ -48,7 +48,7 @@ class AuthService:
         user_repo: UserRepository,
         session_repo: SessionRepository,
         subscription_repo: SubscriptionRepository,
-        redis_client: Optional[Redis] = None,
+        redis_client: Redis | None = None,
     ):
         self.user_repo = user_repo
         self.session_repo = session_repo
@@ -87,7 +87,7 @@ class AuthService:
         return await self._create_user_session(user, request)
 
     async def login_with_password(
-        self, identifier: str, password: str, request: Request, device_fingerprint: Optional[str] = None
+        self, identifier: str, password: str, request: Request, device_fingerprint: str | None = None
     ) -> TokenResponse:
         """Authenticate user using phone/email and password."""
         user = await self.user_repo.get_by_identifier(identifier)
@@ -200,7 +200,7 @@ class AuthService:
         return otp_code
 
     async def verify_otp(
-        self, phone_number: str, otp_code: str, request: Request, device_fingerprint: Optional[str] = None
+        self, phone_number: str, otp_code: str, request: Request, device_fingerprint: str | None = None
     ) -> TokenResponse:
         """Verify the OTP in constant time and issue JWT tokens."""
         lockout_count = await self.session_repo.get_lockout_count(phone_number)
@@ -229,7 +229,7 @@ class AuthService:
         return await self._create_user_session(user, request, device_fingerprint)
 
     async def _create_user_session(
-        self, user, request: Request, device_fingerprint: Optional[str] = None
+        self, user, request: Request, device_fingerprint: str | None = None
     ) -> TokenResponse:
         access_token, refresh_token = self._issue_tokens(user.id, user.role)
         

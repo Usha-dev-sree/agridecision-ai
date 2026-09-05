@@ -1,7 +1,6 @@
 """
 Weather Service - FastAPI Router
 """
-from typing import List
 
 from fastapi import APIRouter, Depends, Query
 from redis.asyncio import Redis
@@ -41,7 +40,7 @@ async def get_weather_forecast(
     return await service.get_7day_forecast(latitude, longitude)
 
 
-@router.get("/alerts", response_model=List[WeatherAlertResponse])
+@router.get("/alerts", response_model=list[WeatherAlertResponse])
 async def get_weather_alerts(
     latitude: float = Query(..., ge=-90.0, le=90.0),
     longitude: float = Query(..., ge=-180.0, le=180.0),

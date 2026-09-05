@@ -4,7 +4,7 @@ AgriDecision AI - Common FastAPI Dependencies
 Provides shared dependencies for database sessions, JWT authentication,
 and real-time token revocation/blacklisting.
 """
-from typing import AsyncGenerator, Callable, Optional
+from collections.abc import AsyncGenerator, Callable
 
 from fastapi import Depends, Request
 from fastapi.security import OAuth2PasswordBearer
@@ -32,7 +32,7 @@ def get_db_dependency(db_manager: DatabaseManager) -> Callable[[], AsyncGenerato
 def get_current_user_dependency(
     secret_key: str,
     algorithm: str = "HS256",
-    redis_client: Optional[Redis] = None,
+    redis_client: Redis | None = None,
 ) -> Callable:
     """
     Returns a FastAPI dependency that extracts and validates the JWT user payload.
@@ -44,7 +44,7 @@ def get_current_user_dependency(
     ) -> dict:
         if not token:
             raise UnauthorizedException(detail="Not authenticated")
-        
+
         # Check token blacklist in Redis if client is wired
         if redis_client:
             token_digest = hash_token(token)
@@ -56,7 +56,7 @@ def get_current_user_dependency(
         user_id: str = payload.get("sub")
         if not user_id:
             raise UnauthorizedException(detail="Invalid authentication credentials")
-        
+
         return payload
 
     return get_current_user

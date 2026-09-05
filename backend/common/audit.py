@@ -3,9 +3,9 @@ AgriDecision AI - Security Audit Logging Engine
 ===============================================
 Writes structured, immutable security audit event records (login attempts, privilege changes, PII access).
 """
-import json
-from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+from datetime import UTC, datetime
+from typing import Any
+
 from backend.common.logging import get_logger
 
 logger = get_logger("security.audit")
@@ -18,10 +18,10 @@ class AuditLogger:
     def log_event(
         action: str,
         actor_id: str,
-        resource_id: Optional[str] = None,
+        resource_id: str | None = None,
         status: str = "SUCCESS",
-        ip_address: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        ip_address: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> None:
         """Emits a structured audit log entry."""
         audit_entry = {
@@ -31,7 +31,7 @@ class AuditLogger:
             "resource_id": resource_id,
             "status": status,
             "ip_address": ip_address,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "metadata": metadata or {},
         }
         logger.info("Security Audit Event: %s", action, extra=audit_entry)

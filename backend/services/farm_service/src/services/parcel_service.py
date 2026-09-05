@@ -2,20 +2,19 @@
 Farm Service - Parcel Geometry Operations Service
 Handles parcel split & merge spatial polygon operations.
 """
-from typing import Dict, Any, List
-from uuid import UUID
-from shapely.geometry import Polygon, LineString, shape, mapping
-from shapely.ops import split, unary_union
+from typing import Any
 
 from backend.common.exceptions import APIException
 from backend.common.logging import get_logger
+from shapely.geometry import LineString, mapping, shape
+from shapely.ops import split, unary_union
 
 logger = get_logger(__name__)
 
 
 class ParcelService:
     @staticmethod
-    def split_polygon(geometry_geojson: Dict[str, Any], cut_line_coords: List[List[float]]) -> List[Dict[str, Any]]:
+    def split_polygon(geometry_geojson: dict[str, Any], cut_line_coords: list[list[float]]) -> list[dict[str, Any]]:
         """Split a polygon GeoJSON by a cutting LineString into sub-parcels."""
         try:
             poly = shape(geometry_geojson)
@@ -36,7 +35,7 @@ class ParcelService:
             raise APIException("Failed to split parcel polygon geometry", status_code=400)
 
     @staticmethod
-    def merge_polygons(geometries_geojson: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def merge_polygons(geometries_geojson: list[dict[str, Any]]) -> dict[str, Any]:
         """Merge adjacent polygon GeoJSONs into a unified plot parcel."""
         try:
             polys = [shape(g) for g in geometries_geojson]

@@ -1,27 +1,32 @@
 """
 Notification Service - FastAPI Router
 """
-from typing import Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.services.notification_service.src.dependencies import get_current_user, get_db, get_redis
+from backend.services.notification_service.src.dependencies import (
+    get_current_user,
+    get_db,
+    get_redis,
+)
 from backend.services.notification_service.src.schemas.notification import (
     NotificationItem,
     NotificationListResponse,
     SendNotificationRequest,
 )
-from backend.services.notification_service.src.services.notification_service import NotificationService
+from backend.services.notification_service.src.services.notification_service import (
+    NotificationService,
+)
 
 router = APIRouter(prefix="/v1/notifications", tags=["Notifications"])
 
 
 @router.get("", response_model=NotificationListResponse)
 async def get_user_notifications(
-    channel: Optional[str] = Query(None, description="Filter by channel: SMS, PUSH, IN_APP"),
+    channel: str | None = Query(None, description="Filter by channel: SMS, PUSH, IN_APP"),
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
     db: AsyncSession = Depends(get_db),

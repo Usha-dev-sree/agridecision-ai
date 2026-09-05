@@ -3,7 +3,7 @@ Advisory Service - Crop Recommendation Engine
 Builds the feature vector for ML inference and applies rule-based heuristics
 when model confidence is below threshold.
 """
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from backend.common.logging import get_logger
 
@@ -26,13 +26,13 @@ SEASON_CROPS = {
 
 
 def build_feature_vector(
-    soil_data: Optional[Dict[str, Any]],
-    weather_snapshot: Optional[Dict[str, Any]],
+    soil_data: dict[str, Any] | None,
+    weather_snapshot: dict[str, Any] | None,
     plot_area_ha: float,
     season_name: str,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Assemble the ML input feature dictionary from available data sources."""
-    features: Dict[str, Any] = {
+    features: dict[str, Any] = {
         "plot_area_ha": plot_area_ha,
         "season": season_name,
         # Soil features (default to median Indian agricultural soil values if missing)
@@ -49,11 +49,11 @@ def build_feature_vector(
 
 
 def apply_rule_based_recommendations(
-    features: Dict[str, Any],
+    features: dict[str, Any],
     season_name: str,
-    preferred_crops: Optional[List[str]] = None,
+    preferred_crops: list[str] | None = None,
     top_n: int = 5,
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """
     Heuristic fallback recommendation engine.
     Used when: (a) ML model is unavailable, or (b) model confidence < 0.5.
@@ -71,7 +71,7 @@ def apply_rule_based_recommendations(
     final_crops = eligible_crops.intersection(ph_compatible)
 
     # If user provided preferred crops, boost those to the top of the recommendation list
-    ordered_crops: List[str] = []
+    ordered_crops: list[str] = []
     if preferred_crops:
         for c in preferred_crops:
             c_lower = c.lower()

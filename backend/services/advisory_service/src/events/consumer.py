@@ -2,15 +2,16 @@
 Advisory Service - Kafka Consumers
 Consumes AI worker results and farm boundary change events.
 """
-from typing import Any, Dict
-from redis.asyncio import Redis
+from typing import Any
+
 from backend.common.kafka import KafkaConsumerRunner
 from backend.common.logging import get_logger
+from redis.asyncio import Redis
 
 logger = get_logger(__name__)
 
 
-async def handle_diagnosis_result(payload: Dict[str, Any]) -> None:
+async def handle_diagnosis_result(payload: dict[str, Any]) -> None:
     """
     Processes ML diagnosis results published by the AI worker pod.
     Updates the ImageDiagnosis record in the DB with the final label and confidence.
@@ -24,7 +25,7 @@ async def handle_diagnosis_result(payload: Dict[str, Any]) -> None:
     )
 
 
-async def handle_plot_boundary_changed(payload: Dict[str, Any]) -> None:
+async def handle_plot_boundary_changed(payload: dict[str, Any]) -> None:
     """
     Invalidate recommendation cache when a plot boundary changes significantly.
     """

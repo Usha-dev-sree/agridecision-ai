@@ -17,7 +17,11 @@ from backend.common.middleware.security_middleware import (
     SecurityHeadersMiddleware,
 )
 from backend.services.analytics_service.src.config import settings
-from backend.services.analytics_service.src.dependencies import db_manager, kafka_manager, redis_client
+from backend.services.analytics_service.src.dependencies import (
+    db_manager,
+    kafka_manager,
+    redis_client,
+)
 from backend.services.analytics_service.src.routers import analytics
 
 setup_logging(settings.APP_NAME, settings.LOG_LEVEL)
