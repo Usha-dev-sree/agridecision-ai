@@ -80,8 +80,6 @@ jobs:
         image: wiremock/wiremock:latest
         ports:
           - 8089:8080
-        volumes:
-          - ${{ github.workspace }}/testing/mocks:/home/wiremock
 
     steps:
       - uses: actions/checkout@v4
